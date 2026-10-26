@@ -1,0 +1,26 @@
+# Байткод Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Виртуальные окружения
+venv/
+.venv/
+env/
+ENV/
+
+# Конфигурационные файлы с секретами
+.env
+.env.local
+
+# База данных
+*.db
+*.sqlite3
+
+# Логи и временные файлы
+*.log
+.DS_Store
+
+# IDE
+.vscode/
+.idea/
