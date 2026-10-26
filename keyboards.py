@@ -7,7 +7,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
         [
             InlineKeyboardButton(
-                text="📖 Топ-рецепты (Лид-магнит)",
+                text="📖 Топ-рецепты",
                 callback_data="menu:recipes"
             )
         ],
