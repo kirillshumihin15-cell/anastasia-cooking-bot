@@ -139,9 +139,9 @@ async def nav_main_menu(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "menu:recipes")
 async def nav_recipes(callback: types.CallbackQuery):
-    """Столп 1: Топ-рецепты (Лид-магнит)"""
+    """Столп 1: Меню ТОП-5 рецептов для похудения"""
     await callback.answer()
-    await db.log_event(user_id=callback.from_user.id, event_name="view_lead_magnet")
+    await db.log_event(user_id=callback.from_user.id, event_name="view_top_recipes_menu")
     await db.set_user_state(user_id=callback.from_user.id, state="pillar_recipes")
 
     await safe_edit_text(
@@ -151,16 +151,37 @@ async def nav_recipes(callback: types.CallbackQuery):
     )
 
 
-@dp.callback_query(F.data == "guide:read_online")
-async def nav_guide_online(callback: types.CallbackQuery):
-    """Чтение гайда прямо в боте"""
+@dp.callback_query(F.data.startswith("recipe:item_"))
+async def nav_recipe_detail(callback: types.CallbackQuery):
+    """Просмотр подробной карты конкретного рецепта из 5"""
     await callback.answer()
-    await db.log_event(user_id=callback.from_user.id, event_name="read_guide_online")
+    recipe_id = int(callback.data.split("_")[1])
+    recipe_text = texts.RECIPES_DATA.get(recipe_id, texts.PILLAR_1_RECIPES)
+
+    await db.log_event(
+        user_id=callback.from_user.id,
+        event_name="view_recipe_detail",
+        payload={"recipe_id": recipe_id}
+    )
 
     await safe_edit_text(
         message=callback.message,
-        text=texts.GUIDE_RECIPES_CONTENT,
-        reply_markup=kb.get_back_keyboard()
+        text=recipe_text,
+        reply_markup=kb.get_recipe_detail_keyboard()
+    )
+
+
+@dp.callback_query(F.data == "recipe:all")
+@dp.callback_query(F.data == "guide:read_online")
+async def nav_all_recipes(callback: types.CallbackQuery):
+    """Показать все 5 рецептов разом"""
+    await callback.answer()
+    await db.log_event(user_id=callback.from_user.id, event_name="view_all_recipes")
+
+    await safe_edit_text(
+        message=callback.message,
+        text=texts.ALL_RECIPES_TEXT,
+        reply_markup=kb.get_recipe_detail_keyboard()
     )
 
 

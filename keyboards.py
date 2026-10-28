@@ -34,17 +34,46 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_recipes_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура раздела Топ-рецептов"""
+    """Клавиатура раздела ТОП-5 рецептов для похудения"""
     keyboard = [
         [
             InlineKeyboardButton(
-                text="📖 Открыть экспресс-рецепты в боте",
-                callback_data="guide:read_online"
+                text="🍗 1. Курочка в соусе с черри (~148 ₽)",
+                callback_data="recipe:item_1"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🥑 2. Хрустящие баклажаны (~160 ₽)",
+                callback_data="recipe:item_2"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🍝 3. ПП-паста с индейкой (~153 ₽)",
+                callback_data="recipe:item_3"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🐟 4. Боул с тунцом и яйцом (~171 ₽)",
+                callback_data="recipe:item_4"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🥞 5. ПП-сырники без муки (~119 ₽)",
+                callback_data="recipe:item_5"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="📖 Читать все 5 рецептов разом",
+                callback_data="recipe:all"
             )
         ]
     ]
     
-    # Если указана ссылка на скачивание или Telegraph
     if config.LEAD_MAGNET_URL:
         keyboard.append([
             InlineKeyboardButton(
@@ -55,11 +84,31 @@ def get_recipes_keyboard() -> InlineKeyboardMarkup:
         
     keyboard.append([
         InlineKeyboardButton(
-            text="⬅️ Назад в меню",
+            text="⬅️ Назад в главное меню",
             callback_data="menu:main"
         )
     ])
     return InlineKeyboardMarkup(inline_keyboard=keyboard)
+
+
+def get_recipe_detail_keyboard() -> InlineKeyboardMarkup:
+    """Клавиатура просмотра отдельного рецепта"""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="⬅️ Ко всем 5 рецептам",
+                    callback_data="menu:recipes"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="🏠 В главное меню",
+                    callback_data="menu:main"
+                )
+            ]
+        ]
+    )
 
 
 def get_product_keyboard() -> InlineKeyboardMarkup:
