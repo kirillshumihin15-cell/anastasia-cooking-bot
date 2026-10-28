@@ -25,7 +25,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton(
-                text="💬 Связь с Анастасией",
+                text="💬 Поддержка и связь",
                 callback_data="menu:contact"
             )
         ]
@@ -107,17 +107,11 @@ def get_reviews_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_contact_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура связи: Анастасия и менеджер по закрытому каналу"""
+    """Клавиатура связи с менеджером проекта"""
     keyboard = [
         [
             InlineKeyboardButton(
-                text="💌 Написать Анастасии в ЛС",
-                url=config.ANASTASIA_CONTACT
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="💬 Менеджер по закрытому каналу",
+                text="💬 Написать менеджеру (@shymlhln)",
                 url=config.MANAGER_CONTACT
             )
         ],
