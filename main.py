@@ -1,6 +1,7 @@
 import asyncio
 import logging
 import sys
+from pathlib import Path
 from aiohttp import web
 from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import CommandStart, Command
@@ -12,6 +13,18 @@ import database as db
 import texts
 import keyboards as kb
 from utils import safe_edit_text
+
+# Пути к приветственному фото
+WELCOME_PHOTO_JPG = Path("assets/welcome.jpg")
+WELCOME_PHOTO_PNG = Path("assets/welcome.png")
+
+def get_welcome_photo() -> types.FSInputFile | None:
+    """Получить файл фото приветствия (предпочтительно оптимизированный JPG)"""
+    if WELCOME_PHOTO_JPG.exists():
+        return types.FSInputFile(WELCOME_PHOTO_JPG)
+    if WELCOME_PHOTO_PNG.exists():
+        return types.FSInputFile(WELCOME_PHOTO_PNG)
+    return None
 
 # Настройка логирования
 logging.basicConfig(
@@ -65,14 +78,23 @@ async def handle_chat_join_request(event: types.ChatJoinRequest):
         data={"source": "chat_join_request"}
     )
 
-    # Отправляем лид-магнит и главное меню
+    # Отправляем фото-приветствие и главное меню
     try:
-        await bot.send_message(
-            chat_id=user.id,
-            text=texts.WELCOME_JOIN_REQUEST,
-            reply_markup=kb.get_main_menu_keyboard(),
-            disable_web_page_preview=True
-        )
+        photo = get_welcome_photo()
+        if photo:
+            await bot.send_photo(
+                chat_id=user.id,
+                photo=photo,
+                caption=texts.WELCOME_JOIN_REQUEST,
+                reply_markup=kb.get_main_menu_keyboard()
+            )
+        else:
+            await bot.send_message(
+                chat_id=user.id,
+                text=texts.WELCOME_JOIN_REQUEST,
+                reply_markup=kb.get_main_menu_keyboard(),
+                disable_web_page_preview=True
+            )
     except Exception as e:
         logger.error(f"Не удалось отправить приветствие пользователю {user.id}: {e}")
 
@@ -94,11 +116,19 @@ async def handle_start(message: types.Message):
     await db.log_event(user_id=user.id, event_name="start_command")
     await db.set_user_state(user_id=user.id, state="main_menu")
 
-    await message.answer(
-        text=texts.WELCOME_DIRECT,
-        reply_markup=kb.get_main_menu_keyboard(),
-        disable_web_page_preview=True
-    )
+    photo = get_welcome_photo()
+    if photo:
+        await message.answer_photo(
+            photo=photo,
+            caption=texts.WELCOME_DIRECT,
+            reply_markup=kb.get_main_menu_keyboard()
+        )
+    else:
+        await message.answer(
+            text=texts.WELCOME_DIRECT,
+            reply_markup=kb.get_main_menu_keyboard(),
+            disable_web_page_preview=True
+        )
 
 
 @dp.message(Command("stats"))
