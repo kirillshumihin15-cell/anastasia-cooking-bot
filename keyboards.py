@@ -137,22 +137,17 @@ def get_product_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_reviews_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура отзывов с ссылкой на канал"""
-    keyboard = [
-        [
-            InlineKeyboardButton(
-                text="📸 Смотреть фото блюд и отзывы в канале",
-                url=config.REVIEWS_CHANNEL_LINK
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="⬅️ Назад в меню",
-                callback_data="menu:main"
-            )
+    """Клавиатура отзывов"""
+    return InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="⬅️ Назад в меню",
+                    callback_data="menu:main"
+                )
+            ]
         ]
-    ]
-    return InlineKeyboardMarkup(inline_keyboard=keyboard)
+    )
 
 
 def get_contact_keyboard() -> InlineKeyboardMarkup:
