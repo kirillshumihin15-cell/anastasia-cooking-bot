@@ -149,6 +149,31 @@ async def handle_stats(message: types.Message):
     await message.answer(text=text)
 
 
+@dp.message(Command("get_pdf"))
+async def handle_get_pdf(message: types.Message):
+    """Отправка PDF-книги закрытого клуба администратору"""
+    if config.ADMIN_ID and message.from_user.id != config.ADMIN_ID:
+        return
+
+    pdf_path = Path("assets/База_Рецептов_и_Рационов_Анастасии.pdf")
+    if not pdf_path.exists():
+        await message.answer("❌ Файл PDF еще не сгенерирован в assets/")
+        return
+
+    await message.answer("⏳ Загружаю 13-страничную PDF-книгу закрытого клуба...")
+    await message.answer_document(
+        document=types.FSInputFile(pdf_path),
+        caption=(
+            "📖 <b>База Рецептов и Рационов Анастасии (Закрытый Клуб)</b> 🤍\n\n"
+            "• 13 страниц премиального авторского контента\n"
+            "• Система Meal Prep (заготовки на 3 дня за 1 вечер)\n"
+            "• 90+ рецептов и подробные карты с КБЖУ\n"
+            "• Таблица замен продуктов и умный список покупок\n\n"
+            "<i>Файл готов для закрепления в приватном канале!</i>"
+        )
+    )
+
+
 # ==========================================
 # ИНЛАЙН НАВИГАЦИЯ (SAFE EDIT TEXT)
 # ==========================================
