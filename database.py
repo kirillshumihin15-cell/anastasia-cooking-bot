@@ -41,6 +41,16 @@ async def init_db():
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         """)
+
+        await db.execute("""
+            CREATE TABLE IF NOT EXISTS abandoned_checkouts (
+                user_id INTEGER PRIMARY KEY,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                reminded_at TIMESTAMP NULL,
+                completed_at TIMESTAMP NULL,
+                is_active INTEGER DEFAULT 1
+            )
+        """)
         await db.commit()
 
 
@@ -118,6 +128,9 @@ async def get_stats() -> Dict[str, Any]:
         async with db.execute("SELECT COUNT(*) FROM users WHERE source = 'chat_join_request'") as cursor:
             join_requests = (await cursor.fetchone())[0]
 
+        async with db.execute("SELECT COUNT(*) FROM abandoned_checkouts WHERE is_active = 1") as cursor:
+            abandoned_active = (await cursor.fetchone())[0]
+
         async with db.execute("""
             SELECT event_name, COUNT(*) as cnt 
             FROM analytics_events 
@@ -129,5 +142,70 @@ async def get_stats() -> Dict[str, Any]:
     return {
         "total_users": total_users,
         "join_requests": join_requests,
+        "abandoned_active": abandoned_active,
         "events": {event[0]: event[1] for event in events}
     }
+
+
+async def create_or_update_checkout(user_id: int):
+    """Зафиксировать просмотр клуба / попытку оплаты для дожима"""
+    now = datetime.utcnow().isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        # Если заказ уже оплачен, повторно дожим не запускаем
+        async with db.execute("SELECT completed_at FROM abandoned_checkouts WHERE user_id = ?", (user_id,)) as cursor:
+            row = await cursor.fetchone()
+            if row and row[0] is not None:
+                return
+
+        await db.execute("""
+            INSERT INTO abandoned_checkouts (user_id, created_at, reminded_at, completed_at, is_active)
+            VALUES (?, ?, NULL, NULL, 1)
+            ON CONFLICT(user_id) DO UPDATE SET
+                created_at = excluded.created_at,
+                reminded_at = NULL,
+                is_active = 1
+            WHERE completed_at IS NULL
+        """, (user_id, now))
+        await db.commit()
+
+
+async def get_pending_checkouts_to_remind(delay_minutes: int = 15) -> List[Dict[str, Any]]:
+    """Получить пользователей для отправки догоняющего сообщения через указанное количество минут"""
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute("""
+            SELECT user_id, created_at 
+            FROM abandoned_checkouts
+            WHERE is_active = 1 
+              AND reminded_at IS NULL 
+              AND completed_at IS NULL
+              AND datetime(created_at, '+' || ? || ' minutes') <= datetime('now')
+        """, (delay_minutes,)) as cursor:
+            rows = await cursor.fetchall()
+            return [{"user_id": r["user_id"], "created_at": r["created_at"]} for r in rows]
+
+
+async def mark_checkout_reminded(user_id: int):
+    """Пометить, что напоминание отправлено (больше не беспокоить)"""
+    now = datetime.utcnow().isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("""
+            UPDATE abandoned_checkouts 
+            SET reminded_at = ?, is_active = 0 
+            WHERE user_id = ?
+        """, (now, user_id))
+        await db.commit()
+
+
+async def mark_checkout_completed(user_id: int):
+    """Пометить, что заказ оплачен (отменить дожим)"""
+    now = datetime.utcnow().isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("""
+            INSERT INTO abandoned_checkouts (user_id, completed_at, is_active)
+            VALUES (?, ?, 0)
+            ON CONFLICT(user_id) DO UPDATE SET
+                completed_at = excluded.completed_at,
+                is_active = 0
+        """, (user_id, now))
+        await db.commit()

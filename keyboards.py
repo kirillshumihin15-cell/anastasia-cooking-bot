@@ -187,3 +187,28 @@ def get_back_keyboard() -> InlineKeyboardMarkup:
             ]
         ]
     )
+
+
+def get_abandoned_checkout_keyboard() -> InlineKeyboardMarkup:
+    """Клавиатура дожима брошенной корзины"""
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                text="💳 Забрать навсегда за 490 ₽",
+                url=config.PAYMENT_TRIBUTE_URL
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="💬 Написать менеджеру (@shymlhln)",
+                url=config.MANAGER_CONTACT
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="🏠 В главное меню",
+                callback_data="menu:main"
+            )
+        ]
+    ]
+    return InlineKeyboardMarkup(inline_keyboard=keyboard)

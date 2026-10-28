@@ -143,7 +143,8 @@ async def handle_stats(message: types.Message):
     text = (
         f"📊 <b>Статистика бота Анастасии:</b>\n\n"
         f"👥 Всего пользователей: <b>{stats['total_users']}</b>\n"
-        f"📥 Заявок на вступление: <b>{stats['join_requests']}</b>\n\n"
+        f"📥 Заявок на вступление: <b>{stats['join_requests']}</b>\n"
+        f"🛒 Брошенных корзин на контроле: <b>{stats.get('abandoned_active', 0)}</b>\n\n"
         f"<b>События воронки:</b>\n{events_str}"
     )
     await message.answer(text=text)
@@ -256,6 +257,9 @@ async def nav_product(callback: types.CallbackQuery):
     await callback.answer()
     await db.log_event(user_id=callback.from_user.id, event_name="view_product")
     await db.set_user_state(user_id=callback.from_user.id, state="pillar_product")
+    
+    # Фиксируем просмотр закрытого клуба для дожима (15 минут)
+    await db.create_or_update_checkout(user_id=callback.from_user.id)
 
     preview_path = Path("assets/club_preview.jpg")
     if preview_path.exists():
@@ -302,7 +306,40 @@ async def nav_contact(callback: types.CallbackQuery):
 
 
 # ==========================================
-# HEALTHCHECK СЕРВЕР (ДЛЯ RENDER.COM)
+# ДОЖИМ БРОШЕННЫХ КОРЗИН (ЧЕРЕЗ 15 МИНУТ)
+# ==========================================
+
+async def check_abandoned_checkouts_loop(bot: Bot):
+    """Фоновый цикл проверки и отправки дожима через 15 минут"""
+    logger.info("Запущен фоновый воркер дожима брошенных корзин (15 мин)...")
+    while True:
+        try:
+            await asyncio.sleep(60)  # Проверяем базу каждую минуту
+            pending = await db.get_pending_checkouts_to_remind(delay_minutes=15)
+            for item in pending:
+                user_id = item["user_id"]
+                try:
+                    await bot.send_message(
+                        chat_id=user_id,
+                        text=texts.ABANDONED_CHECKOUT_TEXT,
+                        reply_markup=kb.get_abandoned_checkout_keyboard(),
+                        parse_mode="HTML"
+                    )
+                    await db.mark_checkout_reminded(user_id)
+                    await db.log_event(user_id=user_id, event_name="abandoned_cart_reminder_sent")
+                    logger.info(f"Дожим (15 мин) успешно отправлен пользователю {user_id}")
+                except Exception as send_err:
+                    logger.warning(f"Не удалось отправить дожим пользователю {user_id}: {send_err}")
+                    await db.mark_checkout_reminded(user_id)
+        except asyncio.CancelledError:
+            logger.info("Воркер дожима остановлен.")
+            break
+        except Exception as e:
+            logger.error(f"Ошибка в цикле дожима: {e}")
+
+
+# ==========================================
+# HEALTHCHECK & TRIBUTE WEBHOOK СЕРВЕР (ДЛЯ RENDER.COM)
 # ==========================================
 
 async def healthcheck_handler(request: web.Request) -> web.Response:
@@ -314,17 +351,43 @@ async def healthcheck_handler(request: web.Request) -> web.Response:
     })
 
 
+async def tribute_webhook_handler(request: web.Request) -> web.Response:
+    """Обработка вебхука от Tribute при успешной оплате"""
+    try:
+        data = await request.json()
+        logger.info(f"Получен webhook от Tribute: {data}")
+
+        user_id = None
+        if isinstance(data, dict):
+            user_id = data.get("telegram_user_id") or data.get("user_id") or data.get("telegram_id")
+            if not user_id and "payload" in data and isinstance(data["payload"], dict):
+                user_id = data["payload"].get("telegram_user_id") or data["payload"].get("user_id")
+
+        if user_id:
+            user_id = int(user_id)
+            await db.mark_checkout_completed(user_id)
+            await db.log_event(user_id=user_id, event_name="tribute_payment_success", payload=data)
+            logger.info(f"Оплата через Tribute зафиксирована для user_id {user_id}")
+
+        return web.json_response({"status": "ok"})
+    except Exception as e:
+        logger.error(f"Ошибка обработки webhook Tribute: {e}")
+        return web.json_response({"status": "error", "message": str(e)}, status=400)
+
+
 async def start_healthcheck_server(port: int) -> web.AppRunner:
-    """Запуск aiohttp сервера на указанном порту"""
+    """Запуск aiohttp сервера на указанном порту с поддержкой Tribute Webhook"""
     app = web.Application()
     app.router.add_get("/", healthcheck_handler)
     app.router.add_get("/health", healthcheck_handler)
+    app.router.add_post("/tribute/webhook", tribute_webhook_handler)
+    app.router.add_post("/webhook/tribute", tribute_webhook_handler)
 
     runner = web.AppRunner(app)
     await runner.setup()
     site = web.TCPSite(runner, "0.0.0.0", port)
     await site.start()
-    logger.info(f"Healthcheck HTTP-сервер успешно запущен на порту {port}")
+    logger.info(f"Healthcheck & Webhook HTTP-сервер успешно запущен на порту {port}")
     return runner
 
 
@@ -344,6 +407,9 @@ async def main():
     # Запуск aiohttp сервера для Render
     runner = await start_healthcheck_server(config.PORT)
 
+    # Запуск фонового цикла дожима брошенных корзин (15 мин)
+    abandoned_task = asyncio.create_task(check_abandoned_checkouts_loop(bot))
+
     try:
         logger.info("Бот Анастасии запущен в режиме polling...")
         # Явно указываем обновления, включая chat_join_request
@@ -353,6 +419,11 @@ async def main():
         )
     finally:
         logger.info("Остановка бота и очистка ресурсов...")
+        abandoned_task.cancel()
+        try:
+            await abandoned_task
+        except asyncio.CancelledError:
+            pass
         await runner.cleanup()
         await bot.session.close()
 
