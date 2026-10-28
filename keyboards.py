@@ -13,7 +13,7 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton(
-                text="🥗 Закрытый канал (90+ рецептов)",
+                text="🥗 Закрытый клуб (98 рецептов)",
                 callback_data="menu:product"
             )
         ],
@@ -95,6 +95,12 @@ def get_recipe_detail_keyboard() -> InlineKeyboardMarkup:
     """Клавиатура просмотра отдельного рецепта"""
     return InlineKeyboardMarkup(
         inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🥗 Забрать всю базу (98 рецептов)",
+                    url=config.PAYMENT_TRIBUTE_URL
+                )
+            ],
             [
                 InlineKeyboardButton(
                     text="⬅️ Ко всем 5 рецептам",
