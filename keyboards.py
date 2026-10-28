@@ -122,7 +122,7 @@ def get_product_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
         [
             InlineKeyboardButton(
-                text="💳 Оплатить доступ (Tribute)",
+                text="💳 Забрать навсегда за 490 ₽ (Tribute)",
                 url=config.PAYMENT_TRIBUTE_URL
             )
         ],
