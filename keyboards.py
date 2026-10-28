@@ -63,24 +63,18 @@ def get_recipes_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_product_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура доступа в закрытый канал с кнопками оплаты"""
+    """Клавиатура доступа в закрытый канал: только Tribute и менеджер"""
     keyboard = [
         [
             InlineKeyboardButton(
-                text="💳 Вступить через Tribute (Telegram)",
+                text="💳 Оплатить доступ (Tribute)",
                 url=config.PAYMENT_TRIBUTE_URL
             )
         ],
         [
             InlineKeyboardButton(
-                text="💳 Оплата картой РФ / Мир (Lava)",
-                url=config.PAYMENT_LAVA_URL
-            )
-        ],
-        [
-            InlineKeyboardButton(
-                text="❓ Задать вопрос по доступу",
-                url=config.ANASTASIA_CONTACT
+                text="💬 Вопрос по каналу (Менеджер)",
+                url=config.MANAGER_CONTACT
             )
         ],
         [
@@ -113,12 +107,18 @@ def get_reviews_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_contact_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура связи с автором"""
+    """Клавиатура связи: Анастасия и менеджер по закрытому каналу"""
     keyboard = [
         [
             InlineKeyboardButton(
                 text="💌 Написать Анастасии в ЛС",
                 url=config.ANASTASIA_CONTACT
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                text="💬 Менеджер по закрытому каналу",
+                url=config.MANAGER_CONTACT
             )
         ],
         [

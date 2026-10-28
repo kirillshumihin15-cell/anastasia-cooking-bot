@@ -15,10 +15,10 @@ class Config:
     CHANNEL_LINK: str = os.getenv("CHANNEL_LINK", "https://t.me/telegram")
     REVIEWS_CHANNEL_LINK: str = os.getenv("REVIEWS_CHANNEL_LINK", "https://t.me/telegram")
     ANASTASIA_CONTACT: str = os.getenv("ANASTASIA_CONTACT", "https://t.me/anastasia_kitchen")
+    MANAGER_CONTACT: str = os.getenv("MANAGER_CONTACT", "https://t.me/shymlhln")
     
-    # Платёжные шлюзы (Tribute / Lava)
+    # Платёжный шлюз Tribute
     PAYMENT_TRIBUTE_URL: str = os.getenv("PAYMENT_TRIBUTE_URL", "https://tribute.tg/")
-    PAYMENT_LAVA_URL: str = os.getenv("PAYMENT_LAVA_URL", "https://lava.top/")
     
     # Лид-магнит (прямая ссылка на PDF / Telegraph, если есть)
     LEAD_MAGNET_URL: str = os.getenv("LEAD_MAGNET_URL", "")
