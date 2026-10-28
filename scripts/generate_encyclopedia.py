@@ -1,14 +1,16 @@
 """
-Генератор масштабной Кулинарной Энциклопедии Закрытого Клуба Анастасии.
-Формат: Журнальная книга A4 на 26-28 страниц.
+Генератор расширенной 24-страничной Кулинарной Энциклопедии Закрытого Клуба Анастасии.
 Включает:
-- 50+ подробнейших рецептов по всем категориям
-- Отдельную мощную ветку "Еда для всей семьи и мужа" (блюда-трансформеры)
-- Ветку "Сытное похудение" (много белка, объем, дефицит без голода)
-- Полную систему Meal Prep (заготовки на 3 дня)
-- 4-недельный календарный рацион с КБЖУ
-- Энциклопедию замен и Zero Waste хранение
-- Умный список покупок для супермаркета
+- Сытное похудение (35г белка, дефицит без голода)
+- Семейную ветку блюд-трансформеров (ест муж и дети, без готовки в 2 котла)
+- Систему Meal Prep (заготовки на 3 дня)
+- Раздел НАРОДНЫХ МЕТОДОВ И СУПЕРФУДОВ:
+  • Семена чиа, лен и псиллиум (щетка для кишечника)
+  • Лимфодренажные напитки и вода Сасси (слив отеков)
+  • Вечерние ритуалы и Золотое молоко с куркумой
+  • Домашний костный бульон (натуральный коллаген для упругости кожи)
+- 50+ рецептов с граммовками и КБЖУ
+- 4-недельные рационы и списки покупок
 """
 
 import base64
@@ -48,14 +50,14 @@ html = f"""<!DOCTYPE html>
         background-color: #FAF8F5;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
-        font-size: 12.5px;
-        line-height: 1.5;
+        font-size: 12px;
+        line-height: 1.48;
     }}
 
     .page {{
         width: 210mm;
         height: 297mm;
-        padding: 18mm 18mm 14mm 18mm;
+        padding: 17mm 18mm 13mm 18mm;
         page-break-after: always;
         break-after: page;
         position: relative;
@@ -84,7 +86,7 @@ html = f"""<!DOCTYPE html>
         text-transform: uppercase;
         color: #E2BA82;
         font-weight: 700;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }}
 
     .cover-title {{
@@ -97,7 +99,7 @@ html = f"""<!DOCTYPE html>
     }}
 
     .cover-desc {{
-        font-size: 13.5px;
+        font-size: 13px;
         line-height: 1.6;
         color: rgba(255, 255, 255, 0.85);
         max-width: 530px;
@@ -125,15 +127,15 @@ html = f"""<!DOCTYPE html>
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }}
 
     .feature-pill {{
         background: rgba(255, 255, 255, 0.1);
         border: 1px solid rgba(226, 186, 130, 0.4);
-        padding: 5px 12px;
+        padding: 4px 11px;
         border-radius: 20px;
-        font-size: 10.5px;
+        font-size: 10px;
         color: #FFFFFF;
         font-weight: 500;
     }}
@@ -143,23 +145,23 @@ html = f"""<!DOCTYPE html>
         padding-top: 12px;
         display: flex;
         justify-content: space-between;
-        font-size: 11px;
+        font-size: 10.5px;
         color: rgba(255, 255, 255, 0.6);
         letter-spacing: 1px;
     }}
 
-    /* ШАПКА И ПОДВАЛ СТРАНИЦ */
+    /* ШАПКА И ПОДВАЛ */
     .page-header {{
         display: flex;
         justify-content: space-between;
         align-items: baseline;
         border-bottom: 1.5px solid #242424;
-        padding-bottom: 6px;
-        margin-bottom: 14px;
+        padding-bottom: 5px;
+        margin-bottom: 12px;
     }}
 
     .header-category {{
-        font-size: 9.5px;
+        font-size: 9px;
         letter-spacing: 2px;
         text-transform: uppercase;
         color: #C25E3E;
@@ -168,21 +170,21 @@ html = f"""<!DOCTYPE html>
 
     .header-page-title {{
         font-family: 'Georgia', serif;
-        font-size: 19px;
+        font-size: 18px;
         color: #172A21;
         font-weight: 700;
     }}
 
     .page-footer {{
         position: absolute;
-        bottom: 10mm;
+        bottom: 9mm;
         left: 18mm;
         right: 18mm;
         display: flex;
         justify-content: space-between;
         border-top: 1px solid #E6DFD5;
-        padding-top: 6px;
-        font-size: 9.5px;
+        padding-top: 5px;
+        font-size: 9px;
         color: #8C8275;
     }}
 
@@ -191,14 +193,14 @@ html = f"""<!DOCTYPE html>
         background: #FFFFFF;
         border: 1px solid #E8E1D7;
         border-left: 4px solid #C25E3E;
-        padding: 12px 16px;
+        padding: 11px 15px;
         border-radius: 4px;
-        margin-bottom: 14px;
+        margin-bottom: 12px;
     }}
 
     .manifesto-banner h3 {{
         font-family: 'Georgia', serif;
-        font-size: 15px;
+        font-size: 14.5px;
         color: #172A21;
         margin-bottom: 4px;
     }}
@@ -206,20 +208,20 @@ html = f"""<!DOCTYPE html>
     .dual-columns {{
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 12px;
-        margin-bottom: 14px;
+        gap: 11px;
+        margin-bottom: 12px;
     }}
 
     .info-card {{
         background: #FFFFFF;
         border: 1px solid #E8E1D7;
-        padding: 12px 14px;
-        border-radius: 5px;
+        padding: 11px 13px;
+        border-radius: 4px;
     }}
 
     .info-card h4 {{
         font-family: 'Georgia', serif;
-        font-size: 13.5px;
+        font-size: 13px;
         color: #172A21;
         margin-bottom: 4px;
     }}
@@ -228,7 +230,7 @@ html = f"""<!DOCTYPE html>
         display: inline-block;
         padding: 2px 7px;
         border-radius: 10px;
-        font-size: 8.5px;
+        font-size: 8px;
         font-weight: 700;
         text-transform: uppercase;
     }}
@@ -236,47 +238,48 @@ html = f"""<!DOCTYPE html>
     .tag-slimming {{ background: #EAF4EE; color: #246B46; }}
     .tag-family {{ background: #FDF1EB; color: #B8502E; }}
     .tag-prep {{ background: #F5EFEB; color: #735137; }}
+    .tag-folk {{ background: #F4EBE8; color: #A64727; }}
 
     /* КАРТОЧКА РЕЦЕПТА */
     .recipe-row {{
         background: #FFFFFF;
         border: 1px solid #E8E1D7;
-        border-radius: 5px;
-        padding: 10px 14px;
-        margin-bottom: 10px;
+        border-radius: 4px;
+        padding: 9px 13px;
+        margin-bottom: 9px;
     }}
 
     .recipe-head {{
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-bottom: 6px;
+        margin-bottom: 5px;
     }}
 
     .recipe-title {{
         font-family: 'Georgia', serif;
-        font-size: 14.5px;
+        font-size: 14px;
         font-weight: 700;
         color: #172A21;
     }}
 
     .recipe-badge-time {{
-        font-size: 9.5px;
+        font-size: 9px;
         background: #F3EFE9;
-        padding: 2px 7px;
-        border-radius: 10px;
+        padding: 2px 6px;
+        border-radius: 8px;
         color: #61594F;
         font-weight: 600;
     }}
 
     .recipe-macros {{
         display: flex;
-        gap: 10px;
-        font-size: 10px;
+        gap: 9px;
+        font-size: 9.5px;
         background: #F8F6F2;
-        padding: 4px 10px;
+        padding: 3px 9px;
         border-radius: 3px;
-        margin-bottom: 8px;
+        margin-bottom: 7px;
         font-weight: 600;
         color: #4A4237;
     }}
@@ -289,50 +292,31 @@ html = f"""<!DOCTYPE html>
     .recipe-content-grid {{
         display: grid;
         grid-template-columns: 1fr 1.4fr;
-        gap: 12px;
-        font-size: 11px;
+        gap: 11px;
+        font-size: 10.5px;
     }}
 
     .subhead {{
-        font-size: 9.5px;
+        font-size: 9px;
         text-transform: uppercase;
         letter-spacing: 0.8px;
         color: #8C8275;
         font-weight: 700;
-        margin-bottom: 3px;
-    }}
-
-    .ing-list {{
-        list-style: none;
-    }}
-
-    .ing-list li {{
         margin-bottom: 2px;
-        padding-left: 9px;
-        position: relative;
     }}
 
-    .ing-list li::before {{
-        content: "–";
-        position: absolute;
-        left: 0;
-        color: #C25E3E;
-    }}
-
-    .steps-list {{
-        padding-left: 14px;
-    }}
-
-    .steps-list li {{
-        margin-bottom: 3px;
-    }}
+    .ing-list {{ list-style: none; }}
+    .ing-list li {{ margin-bottom: 1.5px; padding-left: 8px; position: relative; }}
+    .ing-list li::before {{ content: "–"; position: absolute; left: 0; color: #C25E3E; }}
+    .steps-list {{ padding-left: 13px; }}
+    .steps-list li {{ margin-bottom: 2.5px; }}
 
     .secret-box {{
         background: #FFFDF9;
         border-left: 2.5px solid #E2BA82;
-        padding: 4px 8px;
-        margin-top: 6px;
-        font-size: 10px;
+        padding: 4px 7px;
+        margin-top: 5px;
+        font-size: 9.5px;
         color: #614D2E;
     }}
 
@@ -340,21 +324,15 @@ html = f"""<!DOCTYPE html>
     .transform-split {{
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 8px;
+        gap: 7px;
         background: #FAF7F2;
-        padding: 6px 8px;
-        border-radius: 4px;
-        margin-top: 6px;
-        font-size: 10.5px;
+        padding: 5px 7px;
+        border-radius: 3px;
+        margin-top: 5px;
+        font-size: 10px;
     }}
 
-    .transform-col b {{
-        display: block;
-        font-size: 9.5px;
-        text-transform: uppercase;
-        margin-bottom: 2px;
-    }}
-
+    .transform-col b {{ display: block; font-size: 9px; text-transform: uppercase; margin-bottom: 1px; }}
     .col-husband b {{ color: #B8502E; }}
     .col-diet b {{ color: #246B46; }}
 
@@ -362,26 +340,26 @@ html = f"""<!DOCTYPE html>
     table.compact-table {{
         width: 100%;
         border-collapse: collapse;
-        font-size: 11px;
+        font-size: 10.5px;
         background: #FFFFFF;
         border-radius: 4px;
         overflow: hidden;
         border: 1px solid #E8E1D7;
-        margin-bottom: 12px;
+        margin-bottom: 10px;
     }}
 
     table.compact-table th {{
         background: #172A21;
         color: #FFFFFF;
         text-align: left;
-        padding: 6px 10px;
-        font-size: 9.5px;
+        padding: 5px 8px;
+        font-size: 9px;
         letter-spacing: 0.8px;
         text-transform: uppercase;
     }}
 
     table.compact-table td {{
-        padding: 6px 10px;
+        padding: 5px 8px;
         border-bottom: 1px solid #F0ECE4;
         vertical-align: top;
     }}
@@ -390,84 +368,123 @@ html = f"""<!DOCTYPE html>
     .grocery-columns {{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
+        gap: 9px;
     }}
 
     .grocery-block {{
         background: #FFFFFF;
         border: 1px solid #E8E1D7;
-        padding: 10px;
+        padding: 9px;
         border-radius: 4px;
     }}
 
     .grocery-block h5 {{
         font-family: 'Georgia', serif;
-        font-size: 12px;
+        font-size: 11.5px;
         color: #172A21;
         border-bottom: 1px solid #E8E1D7;
-        padding-bottom: 3px;
-        margin-bottom: 5px;
+        padding-bottom: 2px;
+        margin-bottom: 4px;
     }}
 
     .g-item {{
-        font-size: 10px;
-        margin-bottom: 2.5px;
+        font-size: 9.5px;
+        margin-bottom: 2px;
         display: flex;
         align-items: center;
-        gap: 5px;
+        gap: 4px;
     }}
 
     .box-check {{
-        width: 9px;
-        height: 9px;
+        width: 8px;
+        height: 8px;
         border: 1px solid #C25E3E;
         border-radius: 2px;
     }}
 
-    /* КАЛЕНДАРЬ РАЦИОНА */
+    /* КАЛЕНДАРЬ */
     .calendar-grid {{
         display: grid;
         grid-template-columns: repeat(7, 1fr);
-        gap: 6px;
-        margin-bottom: 12px;
+        gap: 5px;
+        margin-bottom: 10px;
     }}
 
     .cal-day {{
         background: #FFFFFF;
         border: 1px solid #E8E1D7;
-        border-radius: 4px;
-        padding: 6px;
+        border-radius: 3px;
+        padding: 5px;
     }}
 
     .cal-title {{
-        font-size: 9.5px;
+        font-size: 9px;
         font-weight: 700;
         color: #C25E3E;
         text-transform: uppercase;
         border-bottom: 1px solid #F0ECE4;
         padding-bottom: 2px;
+        margin-bottom: 3px;
+    }}
+
+    .cal-meal {{ font-size: 8px; margin-bottom: 3px; }}
+    .cal-meal b {{ color: #172A21; display: block; }}
+
+    /* КАРТОЧКИ НАРОДНЫХ СРЕДСТВ И СУПЕРФУДОВ */
+    .wellness-card {{
+        background: #FFFFFF;
+        border: 1px solid #E8E1D7;
+        border-radius: 4px;
+        padding: 10px 12px;
+        margin-bottom: 9px;
+    }}
+
+    .wellness-head {{
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
         margin-bottom: 4px;
     }}
 
-    .cal-meal {{
-        font-size: 8.5px;
-        margin-bottom: 4px;
-    }}
-
-    .cal-meal b {{
+    .wellness-title {{
+        font-family: 'Georgia', serif;
+        font-size: 13.5px;
         color: #172A21;
-        display: block;
+        font-weight: 700;
+    }}
+
+    .wellness-tag {{
+        font-size: 8.5px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-weight: 600;
+        background: #FDF1EB;
+        color: #C25E3E;
+    }}
+
+    .wellness-desc {{
+        font-size: 10.5px;
+        color: #444;
+        margin-bottom: 5px;
+    }}
+
+    .wellness-recipe-box {{
+        background: #F8FAF8;
+        border-left: 2.5px solid #246B46;
+        padding: 5px 8px;
+        font-size: 10px;
+        color: #1C3829;
     }}
 </style>
 </head>
 <body>
 
-<!-- СТР 1: ОБЛОЖКА -->
+<!-- СТР 01: ОБЛОЖКА -->
 <div class="page cover-page">
     <div class="cover-top">
         <span class="cover-tag">АНАСТАСИЯ • ЗАКРЫТЫЙ КУЛИНАРНЫЙ КЛУБ</span>
-        <h1 class="cover-title">Большая Кулинарная<br>Энциклопедия</h1>
-        <p class="cover-desc">Полная система питания резидентов: 50+ рецептов с граммовками и КБЖУ, семейная ветка «ест муж и дети», сытное похудение без диет, Meal Prep заготовки и рационы на месяц.</p>
+        <h1 class="cover-title">Большая Кулинарная<br>& Wellness Энциклопедия</h1>
+        <p class="cover-desc">Полная система питания и оздоровления: 50+ рецептов с КБЖУ, семейная ветка «ест муж и дети», народные методы и суперфуды (чиа, лен, псиллиум), лимфодренаж, Meal Prep и рационы на месяц.</p>
     </div>
 
     <div class="cover-image-container">
@@ -478,10 +495,10 @@ html = f"""<!DOCTYPE html>
         <div class="cover-features">
             <span class="feature-pill">🥗 Сытное похудение</span>
             <span class="feature-pill">👨‍👩‍👧‍👦 Семейные трансформеры</span>
-            <span class="feature-pill">⚡ Пятиминутки</span>
+            <span class="feature-pill">🌿 Народные суперфуды & Чиа</span>
+            <span class="feature-pill">💧 Лимфодренаж & Детокс</span>
             <span class="feature-pill">🥡 Meal Prep на 3 дня</span>
             <span class="feature-pill">🗓 Рацион на 4 недели</span>
-            <span class="feature-pill">🛒 Списки покупок</span>
         </div>
         <div class="cover-meta">
             <span>ЭКСКЛЮЗИВНЫЕ МАТЕРИАЛЫ КЛУБА</span>
@@ -490,7 +507,7 @@ html = f"""<!DOCTYPE html>
     </div>
 </div>
 
-<!-- СТР 2: ПУТЕВОДИТЕЛЬ ПО КНИГЕ -->
+<!-- СТР 02: ПУТЕВОДИТЕЛЬ -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Навигация</span>
@@ -499,34 +516,34 @@ html = f"""<!DOCTYPE html>
 
     <div class="manifesto-banner">
         <h3>Добро пожаловать в закрытое кулинарное пространство! 🤍</h3>
-        <p>Эта книга создана, чтобы раз и навсегда убрать с ваших плеч стресс от плиты. Больше никаких «что сегодня готовить?», никаких отдельных кастрюль для худеющей мамы и голодного мужа. Все блюда выверены до грамма, содержат чеки из ближайших магазинов и готовятся легко.</p>
+        <p>Перед вами полное практическое руководство, объединяющее сытную домашнюю кулинарию, комфортное похудение и проверенные веками народные методы очищения ЖКТ. Никаких крайностей и голодовок!</p>
     </div>
 
     <div class="dual-columns">
         <div class="info-card">
             <h4>📖 Раздел 1. Философия и База</h4>
-            <p style="font-size: 11px; color: #555;">• Манифест сытого похудения: 35г белка в порции<br>• Метод блюд-трансформеров (один котел на всю семью)<br>• Энциклопедия замен вредных продуктов<br>• Секреты Zero Waste хранения (зелень на 3 недели)</p>
+            <p style="font-size: 10.5px; color: #555;">• Манифест сытого похудения: 35г белка в порции<br>• Метод блюд-трансформеров (один котел на всю семью)<br>• Энциклопедия замен продуктов в магазине</p>
         </div>
         <div class="info-card">
-            <h4>🥡 Раздел 2. Система Meal Prep</h4>
-            <p style="font-size: 11px; color: #555;">• Воскресный Sheet Pan: 1 противень = 3 свободных дня<br>• 4 базовых модуля заготовок<br>• Экспресс-конструктор ужинов за 5 минут</p>
+            <h4>🥡 Раздел 2. Meal Prep & Скорость</h4>
+            <p style="font-size: 10.5px; color: #555;">• Воскресный Sheet Pan: 1 противень = 3 свободных дня<br>• ТОП-6 экспресс-пятиминуток (когда сил нет)<br>• Заготовки базовых соусов и белков</p>
         </div>
     </div>
 
     <div class="dual-columns">
         <div class="info-card">
-            <h4>🍳 Раздел 3. Каталог 50+ рецептов</h4>
-            <p style="font-size: 11px; color: #555;">• Завтраки для разгона метаболизма (сырники, фриттаты, овсяноблины)<br>• Обеды со сложными углеводами (пасты, боулы, крем-супы)<br>• Легкие ужины для плоского живота (курица, баклажаны, рыба)<br>• Семейная ветка: любимые сытные блюда мужа и детей<br>• Экспресс-пятиминутки и десерты без сахара</p>
+            <h4>🌿 Раздел 3. Народные суперфуды & ЖКТ</h4>
+            <p style="font-size: 10.5px; color: #555;">• Семена чиа, лен и псиллиум (генеральная уборка кишечника)<br>• Утренние лимфодренажные напитки и вода Сасси<br>• Вечерние ритуалы: золотое молоко с куркумой<br>• Домашний костный бульон (природный коллаген)</p>
         </div>
         <div class="info-card">
-            <h4>🗓 Раздел 4. План на 4 Недели</h4>
-            <p style="font-size: 11px; color: #555;">• Календарные сетки питания (Недели 1–4) с КБЖУ<br>• Готовые списки продуктов в Магнит и Пятёрочку<br>• Чек-листы для закупки по отделам</p>
+            <h4>🍳 Раздел 4. Каталог 50+ рецептов</h4>
+            <p style="font-size: 10.5px; color: #555;">• Завтраки для разгона метаболизма<br>• Обеды со сложными углеводами<br>• Легкие ужины для плоского живота<br>• Семейная ветка: любимые блюда мужа и детей<br>• Десерты без сахара и белой муки</p>
         </div>
     </div>
 
-    <div class="manifesto-banner" style="border-left-color: #246B46; margin-top: 10px;">
-        <h3>Золотой закон клуба: сытость важнее дефицита</h3>
-        <p style="font-size: 11.5px;">Если в тарелке нет достаточного количества белка и объема клетчатки — мозг потребует сахар через 2 часа. Кормите себя вкусно, красиво и сытно!</p>
+    <div class="manifesto-banner" style="border-left-color: #246B46; margin-top: 5px;">
+        <h3>Золотой закон: сытость важнее ограничений</h3>
+        <p style="font-size: 11px;">Питание должно давать радость, чистую кожу, легкость по утрам и спокойствие в семье. Применяйте эти знания каждый день!</p>
     </div>
 
     <div class="page-footer">
@@ -535,7 +552,7 @@ html = f"""<!DOCTYPE html>
     </div>
 </div>
 
-<!-- СТР 3: ФИЛОСОФИЯ 2 ВЕТОК -->
+<!-- СТР 03: ФИЛОСОФИЯ 2 ВЕТОК -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Методология</span>
@@ -544,24 +561,23 @@ html = f"""<!DOCTYPE html>
 
     <div class="manifesto-banner">
         <h3>Хватит готовить в два котла: метод Блюд-Трансформеров</h3>
-        <p>Главная ошибка худеющих девушек — изолировать себя от семейного стола. Вы варите себе постную курицу, муж с тоской смотрит на траву и заказывает пиццу, дети отказываются есть овощи. Это путь к выгоранию за 7 дней.</p>
-        <p style="margin-top: 6px;"><b>Как работает трансформер Анастасии:</b> Готовится богатая мясная или рыбная основа ресторанного вкуса с соусом на нежирных сливках или томатах passata. Разделение происходит только в момент сборки тарелки!</p>
+        <p>Каждая девушка, садясь на диету, выгорает из-за готовки в две кастрюли: себе вареное, семье жареное. Мы убираем это навсегда. Готовится одно вкуснейшее ресторанное блюдо, а разделение происходит на тарелке за 30 секунд!</p>
     </div>
 
     <div class="dual-columns">
         <div class="info-card">
             <h4><span class="tag-badge tag-slimming">Ветка 1</span> Сытное похудение</h4>
-            <p><b>Формула «35г белка + клетчатка»:</b></p>
-            <p style="font-size: 11px; color: #555; margin-top: 4px;">• Берем основное мясное блюдо;<br>• В качестве гарнира — спаржевая фасоль, брокколи, цветная капуста или свежие овощи со страчателлой;<br>• Итог: огромная тарелка, 300–350 ккал, сытость на 5 часов и плоский живот на утро.</p>
+            <p><b>35г белка + клетчатка:</b></p>
+            <p style="font-size: 10.5px; color: #555; margin-top: 3px;">• Берем базовое горячее блюдо;<br>• Гарнир — спаржевая фасоль, брокколи, цветная капуста или свежие овощи со страчателлой;<br>• Результат: сытость на 5 часов, дефицит калорий и плоский живот утром.</p>
         </div>
         <div class="info-card">
             <h4><span class="tag-badge tag-family">Ветка 2</span> Еда для мужа и детей</h4>
-            <p><b>Метод «Основа + Энергия»:</b></p>
-            <p style="font-size: 11px; color: #555; margin-top: 4px;">• Берем то же самое мясное блюдо с соусом;<br>• Мужу и детям добавляем спагетти, картофельное пюре или рассыпчатый рис;<br>• Посыпаем сыром и поливаем соусом;<br>• Муж сыт, дети просят добавки, а вы потратили 20 минут у плиты!</p>
+            <p><b>Основа + Энергия:</b></p>
+            <p style="font-size: 10.5px; color: #555; margin-top: 3px;">• Берем то же самое мясо с соусом;<br>• Мужу и детям добавляем спагетти, картофельное пюре или рис;<br>• Муж доволен, дети просят добавки, а мама свободна от плиты!</p>
         </div>
     </div>
 
-    <table class="compact-table" style="margin-top: 8px;">
+    <table class="compact-table" style="margin-top: 6px;">
         <thead>
             <tr>
                 <th style="width: 25%;">Блюдо-база</th>
@@ -577,12 +593,12 @@ html = f"""<!DOCTYPE html>
             </tr>
             <tr>
                 <td><b>Курочка под сырной шубкой</b></td>
-                <td>Филе с сыром + запеченные дольки картофеля по-деревенски</td>
+                <td>Филе с сыром + запеченные картофельные дольки с чесноком</td>
                 <td>Филе с сыром + теплый салат из томатов, огурца и кинзы (290 ккал)</td>
             </tr>
             <tr>
                 <td><b>Сливочная паста с индейкой</b></td>
-                <td>Большая порция пасты с индейкой, щедро присыпанная пармезаном</td>
+                <td>Большая порция спагетти с мясом, щедро присыпанная пармезаном</td>
                 <td>60г пасты аль денте + двойная порция сочной индейки и брокколи</td>
             </tr>
         </tbody>
@@ -594,7 +610,7 @@ html = f"""<!DOCTYPE html>
     </div>
 </div>
 
-<!-- СТР 4: СИСТЕМА MEAL PREP -->
+<!-- СТР 04: MEAL PREP -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Организация Кухни</span>
@@ -603,34 +619,34 @@ html = f"""<!DOCTYPE html>
 
     <div class="manifesto-banner">
         <h3>Воскресный Sheet Pan за 45 минут</h3>
-        <p>Мы не варим макароны на неделю вперед. Мы запекаем на одном противне универсальные белковые и овощные модули, которые хранятся в стеклянных контейнерах и собираются в новые свежие блюда за 5 минут.</p>
+        <p>Мы не варим суп на 5 дней вперед. Мы запекаем на одном противне 4 универсальных модуля, которые хранятся в стеклянных контейнерах и превращаются в свежие ужины за 5 минут.</p>
     </div>
 
     <div class="dual-columns">
         <div class="info-card">
             <h4>1. Белковый модуль</h4>
-            <p style="font-size: 11px;">Филе грудки индейки или курицы (800г) смазать оливковым маслом, паприкой, сушеным чесноком и тимьяном. Запекать 30 мин при 180°C. Нарезать тонкими слайсами. Хранить в стекле 4 дня.</p>
+            <p style="font-size: 10.5px;">Филе индейки или курицы (800г) смазать оливковым маслом, паприкой, чесноком и тимьяном. Запекать 30 мин при 180°C. Нарезать тонкими слайсами. Хранить в стекле 4 дня.</p>
         </div>
         <div class="info-card">
             <h4>2. Овощной модуль</h4>
-            <p style="font-size: 11px;">Кабачок, тыква, болгарский перец и цветная капуста крупным кубиком, сбрызнутые 1 ст.л. масла и прованскими травами. Запекаются на том же противне 25 минут.</p>
+            <p style="font-size: 10.5px;">Кабачок, тыква, болгарский перец и цветная капуста кубиком с каплей масла и травами. Запекаются на том же противне 25 минут.</p>
         </div>
     </div>
 
     <div class="dual-columns">
         <div class="info-card">
             <h4>3. Медленный углевод</h4>
-            <p style="font-size: 11px;">Киноа или булгур (250г) отварить с каплей соли и ложкой топленого масла гхи. Рассыпчатая зерновая база на обеды и сытные боулы.</p>
+            <p style="font-size: 10.5px;">Киноа или булгур (250г) отварить с солью и ложкой масла гхи. Рассыпчатая зерновая основа для сытных боулов.</p>
         </div>
         <div class="info-card">
             <h4>4. Соус «Зеленая Богиня»</h4>
-            <p style="font-size: 11px;">Спелый авокадо, пучок кинзы, 150г греческого йогурта, сок половины лайма и морская соль. Пробить блендером. Делает шедевром любое блюдо.</p>
+            <p style="font-size: 10.5px;">Авокадо, пучок кинзы, 150г греческого йогурта, сок половины лайма и морская соль. Пробить блендером в кремовый мусс.</p>
         </div>
     </div>
 
     <div class="manifesto-banner" style="border-left-color: #2E6A4F;">
-        <h3>Как собирать ужины в будни:</h3>
-        <p style="font-size: 11.5px;">• <b>Пн (Калифорнийский боул):</b> теплая киноа + слайсы индейки + запеченные овощи + соус + кунжут (4 мин).<br>• <b>Вт (Теплый салат):</b> салатные листья + теплая индейка + печеная тыква + сыр фета + бальзамик (3 мин).<br>• <b>Ср (Азиатский стир-фрай):</b> прогреть овощи с индейкой на сковороде с соевым соусом и подать с булгуром (5 мин).</p>
+        <h3>Сборка ужинов за 5 минут в будни:</h3>
+        <p style="font-size: 11px;">• <b>Пн (Калифорнийский боул):</b> теплая киноа + слайсы индейки + овощи + соус + кунжут (4 мин).<br>• <b>Вт (Теплый салат):</b> салатные листья + теплая индейка + печеная тыква + фета + бальзамик (3 мин).<br>• <b>Ср (Азиатский стир-фрай):</b> прогреть овощи с индейкой на сковороде с соевым соусом (5 мин).</p>
     </div>
 
     <div class="page-footer">
@@ -639,14 +655,170 @@ html = f"""<!DOCTYPE html>
     </div>
 </div>
 
-<!-- СТР 5: ЗАВТРАКИ ЧАСТЬ 1 -->
+<!-- СТР 05: НАРОДНЫЕ МЕТОДЫ 1: ЧИА, ЛЕН, ПСИЛЛИУМ -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Народная Медицина & Суперфуды</span>
+        <span class="header-page-title">Генеральная Уборка ЖКТ: Чиа, Лён и Псиллиум</span>
+    </div>
+
+    <div class="manifesto-banner" style="border-left-color: #A64727;">
+        <h3>Секрет плоского живота: чистый кишечник без застоя</h3>
+        <p>Часто так называемый «живот-фартук» — это не подкожный жир, а хроническое вздутие, задержка жидкости и вялая перистальтика. Природные семена работают мягче любых аптечных таблеток и восстанавливают микробиом за 7–10 дней.</p>
+    </div>
+
+    <!-- ЧИА -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">1. Семена Чиа: Природный гидроколлоид и чистильщик</span>
+            <span class="wellness-tag">Очищение и сытость</span>
+        </div>
+        <p class="wellness-desc">Семена чиа впитывают воды в 12 раз больше своего веса, образуя скользкий муциновый гель. Этот гель мягко скользит по ворсинкам кишечника, собирает на себя шлаки и токсины, замедляет всасывание сахаров и дарит сытость на 4 часа.</p>
+        <div class="wellness-recipe-box">
+            🥣 <b>Народный утренний «Чиа-детокс»:</b> 1 ст. л. семян чиа залить 200 мл теплой воды (40°C), оставить на 15 мин до гелеобразного состояния, добавить сок четвертинки лимона. Выпить натощак за 30 минут до завтрака.
+        </div>
+    </div>
+
+    <!-- ЛЕН -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">2. Семена Белого и Коричневого Льна: Гормональная молодость</span>
+            <span class="wellness-tag">Женский баланс</span>
+        </div>
+        <p class="wellness-desc">Лен — рекордсмен по растительным лигнанам (фитоэстрогенам), которые стабилизируют женский гормональный фон, убирают предменструальные отеки и улучшают упругость кожи. В цельном виде семена не перевариваются — их обязательно нужно молоть!</p>
+        <div class="wellness-recipe-box">
+            🥛 <b>Вечерний кефирно-льняной эликсир:</b> 1 ст. л. свежемолотых семян льна размешать в стакане нежирного кефира (1%) или греческого йогурта. Пить за 1 час до сна. К утру — идеальная легкость и плоский живот!
+        </div>
+    </div>
+
+    <!-- ПСИЛЛИУМ -->
+    <div class="wellness-card" style="margin-bottom: 0;">
+        <div class="wellness-head">
+            <span class="wellness-title">3. Псиллиум (шелуха семян подорожника): Король клетчатки</span>
+            <span class="wellness-tag">Минус 2 см в талии</span>
+        </div>
+        <p class="wellness-desc">Псиллиум на 85% состоит из чистейшей растворимой клетчатки. Он не травмирует слизистую, питает полезную микрофлору, снижает уровень холестерина и полностью убирает вздутие и газообразование после сырых овощей.</p>
+        <div class="wellness-recipe-box">
+            💡 <b>Как правильно принимать:</b> 1 ч. л. псиллиума размешать в стакане теплой воды и <u>выпить залпом</u>, пока он не превратился в желе. Запить еще одним стаканом чистой воды. Принимать через день.
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
+        <span>05</span>
+    </div>
+</div>
+
+<!-- СТР 06: НАРОДНЫЕ МЕТОДЫ 2: ЛИМФОДРЕНАЖ И ДЕТОКС -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Народная Медицина & Суперфуды</span>
+        <span class="header-page-title">Слив Отеков и Лимфодренаж: Минус 1.5 кг воды</span>
+    </div>
+
+    <div class="manifesto-banner" style="border-left-color: #246B46;">
+        <h3>Почему мы отекаем и как безопасно слить застойную воду?</h3>
+        <p>Соль, углеводы, стресс и недосып задерживают в межклеточном пространстве до 2 литров застойной лимфы. Народные травяные настои запускают естественный дренаж почек без вымывания жизненно важного калия и магния.</p>
+    </div>
+
+    <!-- ВОДА САССИ -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">1. Настоящая «Вода Сасси» (Классический домашний рецепт)</span>
+            <span class="wellness-tag">Дренаж на весь день</span>
+        </div>
+        <p class="wellness-desc">Связывает отеки, выравнивает водный баланс и ускоряет метаболизм благодаря эфирным маслам имбиря и ментолу мяты.</p>
+        <div class="wellness-recipe-box">
+            🥒 <b>Рецепт на 2 литра:</b> 1 средний огурец (тонкими кружочками), 1 лимон тонкими слайсами, 1 ст. л. натертого свежего корня имбиря, 10 свежих листьев мяты. Залить чистой прохладной водой, настоять в холодильнике ночь. Пить в течение следующего дня.
+        </div>
+    </div>
+
+    <!-- ОТВАР ПЕТРУШКИ -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">2. Петрушечный дренажный настой (Экспресс-эффект)</span>
+            <span class="wellness-tag">Срочный слив к утру</span>
+        </div>
+        <p class="wellness-desc">Петрушка содержит рекордное количество апигенина и калия. Это сильнейший природный диуретик, который снимает мешки под глазами и пастозность лица всего за 1 ночь.</p>
+        <div class="wellness-recipe-box">
+            🌿 <b>Рецепт:</b> Большой пучок свежей петрушки мелко порубить, залить 500 мл кипятка, томить на медленном огне 5 минут. Остудить, процедить, добавить сок половины лимона. Пить по полстакана 2 раза в день за 20 минут до еды.
+        </div>
+    </div>
+
+    <!-- ЯБЛОЧНЫЙ УКСУС -->
+    <div class="wellness-card" style="margin-bottom: 0;">
+        <div class="wellness-head">
+            <span class="wellness-title">3. Утренний эликсир с нефильтрованным яблочным уксусом</span>
+            <span class="wellness-tag">Снижение сахара на 30%</span>
+        </div>
+        <p class="wellness-desc">Яблочная и уксусная кислоты стимулируют выработку соляной кислоты в желудке. Белок начинает перевариваться идеально, уходит тяжесть и отрыжка, а скачки глюкозы после еды снижаются почти на треть!</p>
+        <div class="wellness-recipe-box">
+            🍎 <b>Правило приема:</b> 1 ч. л. органического нефильтрованного яблочного уксуса (с осадком «маткой») + 250 мл теплой воды (40°C) + щепотка корицы. Пить через трубочку за 15 минут до первого приема пищи.
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
+        <span>06</span>
+    </div>
+</div>
+
+<!-- СТР 07: НАРОДНЫЕ МЕТОДЫ 3: ВЕЧЕРНИЕ РИТУАЛЫ И КОСТНЫЙ БУЛЬОН -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Народная Медицина & Суперфуды</span>
+        <span class="header-page-title">Вечерние Ритуалы, Куркума и Костный Бульон</span>
+    </div>
+
+    <!-- ЗОЛОТОЕ МОЛОКО -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">1. Аюрведическое «Золотое Молоко» на ночь</span>
+            <span class="wellness-tag">Глубокий сон и сжигание жира</span>
+        </div>
+        <p class="wellness-desc">Куркумин — мощнейший антиоксидант, блокирующий хроническое воспаление и снижающий гормон стресса кортизол (главную причину накопления жира на животе). В сочетании с пиперином черного перца его биодоступность вырастает в 2000 раз!</p>
+        <div class="wellness-recipe-box">
+            ✨ <b>Рецепт:</b> 200 мл миндального или кокосового молока подогреть (не кипятить), добавить 1/2 ч. л. качественной куркумы, щепотку черного молотого перца, щепотку корицы и 1/2 ч. л. масла гхи. Выпить теплым за 40 минут до сна.
+        </div>
+    </div>
+
+    <!-- ТРАВЯНОЙ ЧАЙ АНТИ-ВЗДУТИЕ -->
+    <div class="wellness-card">
+        <div class="wellness-head">
+            <span class="wellness-title">2. Травяной сбор «Анти-вздутие» (Фенхель + Ромашка + Мята)</span>
+            <span class="wellness-tag">Спокойный живот</span>
+        </div>
+        <p class="wellness-desc">Семена фенхеля содержат анетол, который снимает кишечные спазмы, расслабляет гладкую мускулатуру и мягко убирает скопившиеся газы. Утром живот плоский и втянутый.</p>
+        <div class="wellness-recipe-box">
+            ☕ <b>Заваривание:</b> 1 ч. л. семян фенхеля (слегка растолочь в ступке) + 1 фильтр-пакет цветков ромашки + 3 листочка мяты. Залить 300 мл кипятка, настоять 10 минут под крышкой. Пить теплым после ужина.
+        </div>
+    </div>
+
+    <!-- КОСТНЫЙ БУЛЬОН -->
+    <div class="wellness-card" style="margin-bottom: 0;">
+        <div class="wellness-head">
+            <span class="wellness-title">3. Домашний костный бульон: Природный коллаген для кожи</span>
+            <span class="wellness-tag">Упругость при похудении</span>
+        </div>
+        <p class="wellness-desc">При похудении критически важно сохранить кожу упругой и предотвратить дряблость. Долгий костный бульон отдает глицин, пролин и биодоступный коллаген, заживляя слизистую кишечника и подтягивая овал лица.</p>
+        <div class="wellness-recipe-box">
+            🍲 <b>Секрет томления:</b> 1.5 кг говяжьих суставных костей залить водой, добавить 2 ст. л. яблочного уксуса (он вытягивает минералы из костей). Томить на самом медленном огне 8–12 часов. Разлить по формам для льда — добавлять кубик в любые соусы и супы!
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
+        <span>07</span>
+    </div>
+</div>
+
+<!-- СТР 08: ЗАВТРАКИ ЧАСТЬ 1 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
-        <span class="header-page-title">Завтраки для метаболизма (Часть 1)</span>
+        <span class="header-page-title">Завтраки для разгона метаболизма (Часть 1)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">1. Пышные ПП-сырники без муки с ягодным соусом</span>
@@ -678,7 +850,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">2. Овсяноблин с слабосоленым лососем и творожным сыром</span>
@@ -710,7 +881,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">3. Итальянская фриттата со шпинатом и сыром фета</span>
@@ -744,18 +914,17 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>05</span>
+        <span>08</span>
     </div>
 </div>
 
-<!-- СТР 6: ЗАВТРАКИ ЧАСТЬ 2 -->
+<!-- СТР 09: ЗАВТРАКИ ЧАСТЬ 2 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
-        <span class="header-page-title">Завтраки для метаболизма (Часть 2)</span>
+        <span class="header-page-title">Завтраки для разгона метаболизма (Часть 2)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">4. Шакшука по-средиземноморски с томатами и кинзой</span>
@@ -787,7 +956,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">5. Творожная запеканка с цедрой лимона и маком</span>
@@ -819,7 +987,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">6. Ленивая ягодная овсянка в банке (с вечера)</span>
@@ -853,18 +1020,17 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>06</span>
+        <span>09</span>
     </div>
 </div>
 
-<!-- СТР 7: ОБЕДЫ ЧАСТЬ 1 -->
+<!-- СТР 10: ОБЕДЫ ЧАСТЬ 1 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
         <span class="header-page-title">Сытные Обеды со сложными углеводами (Часть 1)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">7. ПП-паста из твердых сортов с индейкой и шпинатом</span>
@@ -896,7 +1062,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">8. Прованский боул с киноа, курицей гриль и печеным перцем</span>
@@ -928,7 +1093,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">9. Бархатный крем-суп из тыквы с тигровыми креветками</span>
@@ -962,18 +1126,17 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>07</span>
+        <span>10</span>
     </div>
 </div>
 
-<!-- СТР 8: ОБЕДЫ ЧАСТЬ 2 -->
+<!-- СТР 11: ОБЕДЫ ЧАСТЬ 2 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
         <span class="header-page-title">Сытные Обеды со сложными углеводами (Часть 2)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">10. Гречневая лапша соба с говядиной и овощами в терияки</span>
@@ -1005,7 +1168,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">11. Нежный куриный бефстроганов с шампиньонами и гречкой</span>
@@ -1037,7 +1199,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">12. Томатный суп с морепродуктами по-тоскански</span>
@@ -1071,18 +1232,17 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>08</span>
+        <span>11</span>
     </div>
 </div>
 
-<!-- СТР 9: УЖИНЫ ЧАСТЬ 1 -->
+<!-- СТР 12: УЖИНЫ ЧАСТЬ 1 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
         <span class="header-page-title">Легкие Ужины для плоского живота (Часть 1)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">13. Филе в сливочно-томатном соусе с черри</span>
@@ -1114,7 +1274,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">14. Хрустящие баклажаны со страчателлой и сладким чили</span>
@@ -1146,7 +1305,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">15. Лосось в медово-горчичной глазури с брокколи на пару</span>
@@ -1180,18 +1338,17 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>09</span>
+        <span>12</span>
     </div>
 </div>
 
-<!-- СТР 10: УЖИНЫ ЧАСТЬ 2 -->
+<!-- СТР 13: УЖИНЫ ЧАСТЬ 2 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Каталог Рецептов</span>
         <span class="header-page-title">Легкие Ужины для плоского живота (Часть 2)</span>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">16. Нежные медальоны из индейки в гранатовом бальзамике</span>
@@ -1223,7 +1380,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">17. Кальмары на гриле с чесночным маслом и свежим салатом</span>
@@ -1255,7 +1411,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- РЕЦЕПТ -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">18. Стейки из цветной капусты под сырной корочкой</span>
@@ -1289,11 +1444,11 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>10</span>
+        <span>13</span>
     </div>
 </div>
 
-<!-- СТР 11: СЕМЕЙНАЯ ВЕТКА ЧАСТЬ 1 -->
+<!-- СТР 14: СЕМЕЙНАЯ ВЕТКА ЧАСТЬ 1 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Семейная Ветка</span>
@@ -1305,7 +1460,6 @@ html = f"""<!DOCTYPE html>
         <p>Вы не стоите над четырьмя сковородками. Базовое блюдо насыщает всю семью, а разделение гарниров занимает ровно 1 минуту!</p>
     </div>
 
-    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 1 -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">19. Нежнейшие тефтели с добавлением цукини в томатном соусе</span>
@@ -1342,7 +1496,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 2 -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">20. Куриное филе под сырно-овощной шубкой (Sheet Pan)</span>
@@ -1381,21 +1534,20 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>11</span>
+        <span>14</span>
     </div>
 </div>
 
-<!-- СТР 12: СЕМЕЙНАЯ ВЕТКА ЧАСТЬ 2 -->
+<!-- СТР 15: СЕМЕЙНАЯ ВЕТКА ЧАСТЬ 2 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Семейная Ветка</span>
         <span class="header-page-title">Блюда-Трансформеры: Ест Муж и Дети (Часть 2)</span>
     </div>
 
-    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 3 -->
     <div class="recipe-row">
         <div class="recipe-head">
-            <span class="recipe-title">21. Домашние куриные наггетсы в кукурузном крахмале (дети обожают!)</span>
+            <span class="recipe-title">21. Домашние куриные наггетсы в кукурузном крахмале</span>
             <span class="recipe-badge-time">⏱ 15 мин</span>
         </div>
         <div class="recipe-content-grid">
@@ -1430,7 +1582,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 4 -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">22. Сочная лазанья из кабачков и индейки без теста</span>
@@ -1470,11 +1621,11 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>12</span>
+        <span>15</span>
     </div>
 </div>
 
-<!-- СТР 13: ЭКСПРЕСС-ПЯТИМИНУТКИ -->
+<!-- СТР 16: ЭКСПРЕСС-ПЯТИМИНУТКИ -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Скорость</span>
@@ -1486,7 +1637,7 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">1. Шакшука за 7 минут в одной сковороде</span>
             <span class="recipe-badge-time">285 ккал • Б: 22 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Прогреть 4 ложки протертых томатов с чесноком (1 мин). Разбить 2 яйца, бросить черри и брынзу. Накрыть крышкой на 4 минуты. Готово!</p>
+        <p style="font-size: 10.5px; color: #444;">Прогреть 4 ложки протертых томатов с чесноком (1 мин). Разбить 2 яйца, бросить черри и брынзу. Накрыть крышкой на 4 минуты. Готово!</p>
     </div>
 
     <div class="recipe-row">
@@ -1494,7 +1645,7 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">2. ПП-шаурма в лаваше с индейкой из заготовок</span>
             <span class="recipe-badge-time">310 ккал • Б: 32 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Лаваш смазать греческим йогуртом с горчицей. Выложить запеченную индейку, огурец, томат и капусту. Прогреть на сухой сковороде 2 мин до хруста.</p>
+        <p style="font-size: 10.5px; color: #444;">Лаваш смазать греческим йогуртом с горчицей. Выложить запеченную индейку, огурец, томат и капусту. Прогреть на сухой сковороде 2 мин до хруста.</p>
     </div>
 
     <div class="recipe-row">
@@ -1502,7 +1653,7 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">3. Протеиновый боул с тунцом и стручковой фасолью</span>
             <span class="recipe-badge-time">340 ккал • Б: 36 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Фасоль отварить 4 мин. В миску выложить фасоль, банку тунца в с/с, вареное яйцо и огурец. Заправить лимоном и оливковым маслом.</p>
+        <p style="font-size: 10.5px; color: #444;">Фасоль отварить 4 мин. В миску выложить фасоль, банку тунца в с/с, вареное яйцо и огурец. Заправить лимоном и оливковым маслом.</p>
     </div>
 
     <div class="recipe-row">
@@ -1510,7 +1661,7 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">4. Горячий сэндвич с тунцом и расплавленным сыром</span>
             <span class="recipe-badge-time">270 ккал • Б: 25 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Цельнозерновой тост смазать творожным сыром, выложить тунец, кружочки томата и ломтик моцареллы. Прогреть на сковороде под крышкой 3 мин.</p>
+        <p style="font-size: 10.5px; color: #444;">Цельнозерновой тост смазать творожным сыром, выложить тунец, кружочки томата и ломтик моцареллы. Прогреть на сковороде под крышкой 3 мин.</p>
     </div>
 
     <div class="recipe-row">
@@ -1518,7 +1669,7 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">5. Творожный мусс «Пломбир» с ягодами за 3 минуты</span>
             <span class="recipe-badge-time">220 ккал • Б: 28 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Брикетный творог 5% взбить блендером с саше FitParad, ванилином и 30 мл молока. Текстура растаявшего мороженого! Полить теплым ягодным пюре.</p>
+        <p style="font-size: 10.5px; color: #444;">Брикетный творог 5% взбить блендером с саше FitParad, ванилином и 30 мл молока. Текстура растаявшего мороженого! Полить теплым ягодным пюре.</p>
     </div>
 
     <div class="recipe-row" style="margin-bottom: 0;">
@@ -1526,23 +1677,22 @@ html = f"""<!DOCTYPE html>
             <span class="recipe-title">6. Ролл из лаваша с творогом, чесноком и зеленью</span>
             <span class="recipe-badge-time">250 ккал • Б: 24 г</span>
         </div>
-        <p style="font-size: 11px; color: #444;">Творог смешать с рубленой кинзой, чесноком и каплей йогурта. Завернуть в лаваш и подрумянить на сковороде без масла по 1 мин. Горячий пирожок без теста!</p>
+        <p style="font-size: 10.5px; color: #444;">Творог смешать с рубленой кинзой, чесноком и каплей йогурта. Завернуть в лаваш и подрумянить на сковороде без масла по 1 мин. Горячий пирожок без теста!</p>
     </div>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>13</span>
+        <span>16</span>
     </div>
 </div>
 
-<!-- СТР 14: ДЕСЕРТЫ БЕЗ САХАРА -->
+<!-- СТР 17: ДЕСЕРТЫ БЕЗ САХАРА -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Сладкое без вины</span>
         <span class="header-page-title">Десерты без сахара и белой муки</span>
     </div>
 
-    <!-- ДЕСЕРТ 1 -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">1. Шоколадный брауни из кабачка (без муки и масла)</span>
@@ -1570,7 +1720,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- ДЕСЕРТ 2 -->
     <div class="recipe-row">
         <div class="recipe-head">
             <span class="recipe-title">2. Кокосовый чиа-пудинг с пюре из сочного манго</span>
@@ -1597,7 +1746,6 @@ html = f"""<!DOCTYPE html>
         </div>
     </div>
 
-    <!-- ДЕСЕРТ 3 -->
     <div class="recipe-row" style="margin-bottom: 0;">
         <div class="recipe-head">
             <span class="recipe-title">3. Домашние белковые трюфели из фиников и какао</span>
@@ -1626,11 +1774,11 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>14</span>
+        <span>17</span>
     </div>
 </div>
 
-<!-- СТР 15: КАЛЕНДАРНЫЙ РАЦИОН НЕДЕЛЯ 1 И 2 -->
+<!-- СТР 18: КАЛЕНДАРНЫЙ РАЦИОН НЕДЕЛИ 1 И 2 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Готовые Рационы</span>
@@ -1651,7 +1799,7 @@ html = f"""<!DOCTYPE html>
         <div class="cal-day"><div class="cal-title">Вс</div><div class="cal-meal"><b>З:</b> Сырники с маком</div><div class="cal-meal"><b>О:</b> Паста с индейкой</div><div class="cal-meal"><b>У:</b> Кальмары гриль</div></div>
     </div>
 
-    <div class="manifesto-banner" style="margin-top: 14px; border-left-color: #246B46;">
+    <div class="manifesto-banner" style="margin-top: 10px; border-left-color: #246B46;">
         <h3>Неделя 2: Сжигание жира и семейный комфорт (1400–1500 ккал)</h3>
     </div>
 
@@ -1667,11 +1815,11 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>15</span>
+        <span>18</span>
     </div>
 </div>
 
-<!-- СТР 16: КАЛЕНДАРНЫЙ РАЦИОН НЕДЕЛЯ 3 И 4 -->
+<!-- СТР 19: КАЛЕНДАРНЫЙ РАЦИОН НЕДЕЛИ 3 И 4 -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Готовые Рационы</span>
@@ -1692,7 +1840,7 @@ html = f"""<!DOCTYPE html>
         <div class="cal-day"><div class="cal-title">Вс</div><div class="cal-meal"><b>З:</b> Сырники с яблоком</div><div class="cal-meal"><b>О:</b> Боул с птицей</div><div class="cal-meal"><b>У:</b> Кабачковая лазанья</div></div>
     </div>
 
-    <div class="manifesto-banner" style="margin-top: 14px; border-left-color: #246B46;">
+    <div class="manifesto-banner" style="margin-top: 10px; border-left-color: #246B46;">
         <h3>Неделя 4: Закрепление привычек и минус 3–4 кг на весах</h3>
     </div>
 
@@ -1708,11 +1856,11 @@ html = f"""<!DOCTYPE html>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>16</span>
+        <span>19</span>
     </div>
 </div>
 
-<!-- СТР 17: ЭНЦИКЛОПЕДИЯ ЗАМЕН И ХРАНЕНИЕ -->
+<!-- СТР 20: ЭНЦИКЛОПЕДИЯ ЗАМЕН -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Шпаргалка Кулинара</span>
@@ -1763,16 +1911,16 @@ html = f"""<!DOCTYPE html>
 
     <div class="manifesto-banner" style="margin-top: 10px; border-left-color: #2E6A4F;">
         <h3>Секреты хранения: зелень хрустит 3 недели!</h3>
-        <p style="font-size: 11px;">• <b>Кинза, укроп и петрушка:</b> обрезать кончики стеблей на 1 см и поставить в банку с 3 см холодной воды, накрыв пакетом. Стоит хрустящей до 20 дней!<br>• <b>Томаты:</b> никогда не храните в холодильнике! Холод разрушает летучие сахара и делает томаты ватными. Храните плодоножкой вниз при комнатной температуре.<br>• <b>Шоковая заморозка ягод:</b> ягоды разложить в 1 слой на разделочной доске, подморозить 2 часа, затем ссыпать в зип-пакет. Никакой слипшейся каши!</p>
+        <p style="font-size: 10.5px;">• <b>Кинза, укроп и петрушка:</b> обрезать кончики стеблей на 1 см и поставить в банку с 3 см холодной воды, накрыв пакетом. Стоит хрустящей до 20 дней!<br>• <b>Томаты:</b> никогда не храните в холодильнике! Холод разрушает летучие сахара и делает томаты ватными. Храните плодоножкой вниз при комнатной температуре.<br>• <b>Шоковая заморозка ягод:</b> ягоды разложить в 1 слой на разделочной доске, подморозить 2 часа, затем ссыпать в зип-пакет. Никакой слипшейся каши!</p>
     </div>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>17</span>
+        <span>20</span>
     </div>
 </div>
 
-<!-- СТР 18: УМНЫЙ СПИСОК ПОКУПОК -->
+<!-- СТР 21: УМНЫЙ СПИСОК ПОКУПОК И ФИНАЛ -->
 <div class="page">
     <div class="page-header">
         <span class="header-category">Супермаркет</span>
@@ -1803,26 +1951,29 @@ html = f"""<!DOCTYPE html>
         </div>
 
         <div class="grocery-block">
-            <h5>Молочка и Бакалея</h5>
+            <h5>Суперфуды и Бакалея</h5>
+            <div class="g-item"><div class="box-check"></div> Семена чиа — 1 уп (150 г)</div>
+            <div class="g-item"><div class="box-check"></div> Семена льна — 1 пачка</div>
+            <div class="g-item"><div class="box-check"></div> Псиллиум — 1 уп</div>
+            <div class="g-item"><div class="box-check"></div> Куркума молотая + корица</div>
             <div class="g-item"><div class="box-check"></div> Творог 5% в брикете — 4 уп</div>
             <div class="g-item"><div class="box-check"></div> Сливки 10% — 2 коробочки</div>
             <div class="g-item"><div class="box-check"></div> Йогурт Teos 2% — 4 банки</div>
             <div class="g-item"><div class="box-check"></div> Страчателла / фета — 2 уп</div>
             <div class="g-item"><div class="box-check"></div> Паста Barilla — 1 уп</div>
             <div class="g-item"><div class="box-check"></div> Киноа / булгур — по 1 уп</div>
-            <div class="g-item"><div class="box-check"></div> Рисовая мука + крахмал</div>
         </div>
     </div>
 
-    <div style="margin-top: 25px; background: #FFFFFF; border: 1px solid #E8E1D7; padding: 16px; border-radius: 6px; text-align: center;">
-        <h4 style="font-family: 'Georgia', serif; font-size: 15px; color: #172A21; margin-bottom: 4px;">Поздравляю с началом легкой и вкусной жизни! 🤍</h4>
-        <p style="font-size: 11.5px; color: #555; max-width: 520px; margin: 0 auto;">Готовьте с удовольствием, делитесь фото блюд в закрытом канале и помните: любовь к себе начинается с того, чем вы наполняете свою тарелку каждый день.</p>
-        <p style="margin-top: 8px; font-size: 10px; color: #888; letter-spacing: 1px;">ВАША АНАСТАСИЯ • 2026</p>
+    <div style="margin-top: 20px; background: #FFFFFF; border: 1px solid #E8E1D7; padding: 14px; border-radius: 6px; text-align: center;">
+        <h4 style="font-family: 'Georgia', serif; font-size: 14.5px; color: #172A21; margin-bottom: 4px;">Поздравляю с началом легкой и вкусной жизни! 🤍</h4>
+        <p style="font-size: 11px; color: #555; max-width: 520px; margin: 0 auto;">Готовьте с удовольствием, применяйте природные суперфуды, делитесь фото блюд в закрытом канале и помните: любовь к себе начинается с того, чем вы наполняете свою тарелку каждый день.</p>
+        <p style="margin-top: 8px; font-size: 9.5px; color: #888; letter-spacing: 1px;">ВАША АНАСТАСИЯ • 2026</p>
     </div>
 
     <div class="page-footer">
         <span>ЭНЦИКЛОПЕДИЯ ЗАКРЫТОГО КЛУБА</span>
-        <span>18</span>
+        <span>21</span>
     </div>
 </div>
 
@@ -1844,7 +1995,7 @@ cmd = [
     str(HTML_OUTPUT)
 ]
 
-print("Генерация масштабного 18-страничного журнала...")
+print("Генерация расширенной книги с народными суперфудами...")
 res = subprocess.run(cmd, capture_output=True, text=True)
 
 if PDF_OUTPUT.exists():
