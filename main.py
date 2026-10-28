@@ -12,7 +12,7 @@ from config import config
 import database as db
 import texts
 import keyboards as kb
-from utils import safe_edit_text
+from utils import safe_edit_text, safe_edit_or_send_photo
 
 # Пути к приветственному фото
 WELCOME_PHOTO_JPG = Path("assets/welcome.jpg")
@@ -186,11 +186,20 @@ async def nav_main_menu(callback: types.CallbackQuery):
     await db.log_event(user_id=callback.from_user.id, event_name="nav_main_menu")
     await db.set_user_state(user_id=callback.from_user.id, state="main_menu")
 
-    await safe_edit_text(
-        message=callback.message,
-        text=texts.MAIN_MENU,
-        reply_markup=kb.get_main_menu_keyboard()
-    )
+    welcome_photo = Path("assets/welcome.jpg")
+    if welcome_photo.exists():
+        await safe_edit_or_send_photo(
+            message=callback.message,
+            photo_path=str(welcome_photo),
+            caption=texts.MAIN_MENU,
+            reply_markup=kb.get_main_menu_keyboard()
+        )
+    else:
+        await safe_edit_text(
+            message=callback.message,
+            text=texts.MAIN_MENU,
+            reply_markup=kb.get_main_menu_keyboard()
+        )
 
 
 @dp.callback_query(F.data == "menu:recipes")
@@ -243,16 +252,25 @@ async def nav_all_recipes(callback: types.CallbackQuery):
 
 @dp.callback_query(F.data == "menu:product")
 async def nav_product(callback: types.CallbackQuery):
-    """Столп 2: Основной продукт (Меню на неделю / Сборник с оплатой)"""
+    """Столп 2: Основной продукт (Закрытый клуб с изображением путеводителя)"""
     await callback.answer()
     await db.log_event(user_id=callback.from_user.id, event_name="view_product")
     await db.set_user_state(user_id=callback.from_user.id, state="pillar_product")
 
-    await safe_edit_text(
-        message=callback.message,
-        text=texts.PILLAR_2_PRODUCT,
-        reply_markup=kb.get_product_keyboard()
-    )
+    preview_path = Path("assets/club_preview.jpg")
+    if preview_path.exists():
+        await safe_edit_or_send_photo(
+            message=callback.message,
+            photo_path=str(preview_path),
+            caption=texts.PILLAR_2_PRODUCT,
+            reply_markup=kb.get_product_keyboard()
+        )
+    else:
+        await safe_edit_text(
+            message=callback.message,
+            text=texts.PILLAR_2_PRODUCT,
+            reply_markup=kb.get_product_keyboard()
+        )
 
 
 @dp.callback_query(F.data == "menu:reviews")
