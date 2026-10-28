@@ -1,21 +1,23 @@
 """
-Скрипт генерации флагманского PDF-руководства для Закрытого Клуба Анастасии.
-Генерирует высококачественный эстетичный PDF через Headless Google Chrome.
+Генератор журнального руководства для Закрытого Клуба Анастасии.
+Формат: Стильный журнал A4 на 6 страниц.
+Ветки:
+1. Сытное похудение (для себя)
+2. Семейные блюда-трансформеры (ест муж и дети, без готовки в 2 котла)
+3. Meal Prep заготовки на 3 дня
+4. Шпаргалка замен и список продуктов из Магнита/Пятерочки
 """
 
-import os
 import base64
 import subprocess
 from pathlib import Path
 
-# Пути
 BASE_DIR = Path(__file__).resolve().parent.parent
 ASSETS_DIR = BASE_DIR / "assets"
 PHOTO_PATH = ASSETS_DIR / "welcome.jpg"
-HTML_OUTPUT = ASSETS_DIR / "guide.html"
+HTML_OUTPUT = ASSETS_DIR / "magazine_guide.html"
 PDF_OUTPUT = ASSETS_DIR / "База_Рецептов_и_Рационов_Анастасии.pdf"
 
-# Чтение фото в Base64 для надежного встраивания
 photo_b64 = ""
 if PHOTO_PATH.exists():
     with open(PHOTO_PATH, "rb") as f:
@@ -25,13 +27,10 @@ html_content = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<title>База рецептов и рационов для похудения — Анастасия</title>
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:ital,wght@0,600;0,700;1,400;1,600&display=swap');
-
     @page {{
         size: A4;
-        margin: 15mm 15mm 15mm 15mm;
+        margin: 0;
     }}
 
     * {{
@@ -41,1118 +40,833 @@ html_content = f"""<!DOCTYPE html>
     }}
 
     body {{
-        font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
-        color: #2D2D2D;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+        color: #242424;
         background-color: #FAF8F5;
-        line-height: 1.55;
-        font-size: 13px;
         -webkit-print-color-adjust: exact;
         print-color-adjust: exact;
+        font-size: 13px;
+        line-height: 1.5;
     }}
 
-    h1, h2, h3, h4 {{
-        font-family: 'Playfair Display', Georgia, serif;
-        color: #1A3026;
-        font-weight: 700;
-    }}
-
-    .page-break {{
+    /* СТРАНИЦА A4 — ФИКСИРОВАННЫЙ РАЗМЕР БЕЗ СЪЕЗЖАНИЯ */
+    .page {{
+        width: 210mm;
+        height: 297mm;
+        padding: 20mm 18mm 16mm 18mm;
         page-break-after: always;
         break-after: page;
+        position: relative;
+        overflow: hidden;
+        background-color: #FAF8F5;
     }}
 
-    .avoid-break {{
-        page-break-inside: avoid;
-        break-inside: avoid;
-    }}
-
-    /* ОБЛОЖКА */
-    .cover {{
-        height: 100vh;
+    /* СТИЛЬ ОБЛОЖКИ */
+    .cover-page {{
+        padding: 0;
+        background: #172A21;
+        color: #FFFFFF;
         display: flex;
         flex-direction: column;
         justify-content: space-between;
-        padding: 40px;
-        background: linear-gradient(145deg, #1A3026 0%, #244235 100%);
-        color: #FFFFFF;
-        border-radius: 12px;
-        position: relative;
-        overflow: hidden;
     }}
 
-    .cover-header {{
-        border-bottom: 1px solid rgba(255,255,255,0.2);
-        padding-bottom: 20px;
+    .cover-top {{
+        padding: 24mm 22mm 0 22mm;
     }}
 
-    .cover-brand {{
-        font-size: 14px;
+    .cover-tag {{
+        display: inline-block;
+        font-size: 11px;
         letter-spacing: 3px;
         text-transform: uppercase;
-        color: #E2B97F;
+        color: #E2BA82;
         font-weight: 600;
-    }}
-
-    .cover-title-block {{
-        margin: 40px 0;
+        margin-bottom: 12px;
     }}
 
     .cover-title {{
-        font-size: 42px;
+        font-family: 'Georgia', serif;
+        font-size: 38px;
         line-height: 1.15;
         color: #FFFFFF;
-        margin-bottom: 16px;
+        font-weight: 700;
+        margin-bottom: 14px;
+        letter-spacing: -0.5px;
     }}
 
-    .cover-subtitle {{
-        font-size: 16px;
-        font-weight: 300;
-        color: rgba(255,255,255,0.85);
-        max-width: 600px;
+    .cover-desc {{
+        font-size: 14px;
         line-height: 1.6;
+        color: rgba(255, 255, 255, 0.8);
+        max-width: 520px;
     }}
 
-    .cover-photo-wrapper {{
+    .cover-image-container {{
         width: 100%;
-        height: 380px;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 2px solid rgba(226, 185, 127, 0.4);
-        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
-        margin: 20px 0;
+        height: 120mm;
+        margin: 15px 0;
+        padding: 0 22mm;
     }}
 
     .cover-photo {{
         width: 100%;
         height: 100%;
         object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid rgba(226, 186, 130, 0.3);
     }}
 
-    .cover-badges {{
+    .cover-bottom {{
+        padding: 0 22mm 20mm 22mm;
+    }}
+
+    .cover-features {{
         display: flex;
-        flex-wrap: wrap;
         gap: 10px;
-        margin-top: 15px;
+        margin-bottom: 18px;
     }}
 
-    .cover-badge {{
-        background: rgba(255,255,255,0.12);
-        border: 1px solid rgba(226, 185, 127, 0.5);
-        padding: 8px 16px;
-        border-radius: 30px;
-        font-size: 12px;
+    .feature-pill {{
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(226, 186, 130, 0.4);
+        padding: 6px 14px;
+        border-radius: 20px;
+        font-size: 11px;
         color: #FFFFFF;
         font-weight: 500;
     }}
 
-    .cover-footer {{
+    .cover-meta {{
+        border-top: 1px solid rgba(255, 255, 255, 0.15);
+        padding-top: 14px;
         display: flex;
         justify-content: space-between;
-        align-items: center;
-        border-top: 1px solid rgba(255,255,255,0.2);
-        padding-top: 20px;
-        font-size: 12px;
-        color: rgba(255,255,255,0.7);
-    }}
-
-    /* СТИЛИ СТРАНИЦ */
-    .section-header {{
-        margin-bottom: 25px;
-        border-bottom: 2px solid #E5DFD5;
-        padding-bottom: 12px;
-        display: flex;
-        justify-content: space-between;
-        align-items: flex-end;
-    }}
-
-    .section-title {{
-        font-size: 26px;
-        color: #1A3026;
-    }}
-
-    .section-tag {{
         font-size: 11px;
-        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.6);
+        letter-spacing: 1px;
+    }}
+
+    /* ВНУТРЕННИЕ СТРАНИЦЫ */
+    .page-header {{
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        border-bottom: 1.5px solid #242424;
+        padding-bottom: 8px;
+        margin-bottom: 18px;
+    }}
+
+    .header-category {{
+        font-size: 10px;
+        letter-spacing: 2.5px;
         text-transform: uppercase;
-        color: #C06C4F;
-        font-weight: 600;
-    }}
-
-    /* МАНИФЕСТ И ПРАВИЛА */
-    .manifesto-box {{
-        background: #FFFFFF;
-        border-left: 4px solid #C06C4F;
-        padding: 22px;
-        border-radius: 0 8px 8px 0;
-        margin-bottom: 25px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-    }}
-
-    .rules-grid {{
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 15px;
-        margin-bottom: 25px;
-    }}
-
-    .rule-card {{
-        background: #FFFFFF;
-        padding: 18px;
-        border-radius: 8px;
-        border: 1px solid #EBE5DC;
-    }}
-
-    .rule-num {{
-        font-family: 'Playfair Display', serif;
-        font-size: 28px;
-        color: #C06C4F;
+        color: #C25E3E;
         font-weight: 700;
-        margin-bottom: 5px;
     }}
 
-    .rule-card h4 {{
-        font-size: 14px;
-        margin-bottom: 6px;
-        color: #1A3026;
+    .header-page-title {{
+        font-family: 'Georgia', serif;
+        font-size: 22px;
+        color: #172A21;
+        font-weight: 700;
     }}
 
-    /* ТАБЛИЦЫ */
-    table {{
-        width: 100%;
-        border-collapse: collapse;
-        margin-bottom: 25px;
-        background: #FFFFFF;
-        border-radius: 8px;
-        overflow: hidden;
-        border: 1px solid #EBE5DC;
-        font-size: 12px;
-    }}
-
-    th {{
-        background: #1A3026;
-        color: #FFFFFF;
-        text-align: left;
-        padding: 12px 14px;
-        font-weight: 600;
+    .page-footer {{
+        position: absolute;
+        bottom: 12mm;
+        left: 18mm;
+        right: 18mm;
+        display: flex;
+        justify-content: space-between;
+        border-top: 1px solid #E6DFD5;
+        padding-top: 8px;
+        font-size: 10px;
+        color: #8C8275;
         letter-spacing: 0.5px;
     }}
 
-    td {{
-        padding: 10px 14px;
+    /* МАНИФЕСТ И БЛОКИ */
+    .manifesto-banner {{
+        background: #FFFFFF;
+        border: 1px solid #E8E1D7;
+        border-left: 4px solid #C25E3E;
+        padding: 16px 20px;
+        border-radius: 4px;
+        margin-bottom: 18px;
+    }}
+
+    .manifesto-banner h3 {{
+        font-family: 'Georgia', serif;
+        font-size: 17px;
+        color: #172A21;
+        margin-bottom: 6px;
+    }}
+
+    .dual-columns {{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+    }}
+
+    .info-card {{
+        background: #FFFFFF;
+        border: 1px solid #E8E1D7;
+        padding: 16px;
+        border-radius: 6px;
+    }}
+
+    .info-card h4 {{
+        font-family: 'Georgia', serif;
+        font-size: 15px;
+        color: #172A21;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }}
+
+    .tag-badge {{
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 9px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }}
+
+    .tag-slimming {{
+        background: #EAF4EE;
+        color: #246B46;
+    }}
+
+    .tag-family {{
+        background: #FDF1EB;
+        color: #B8502E;
+    }}
+
+    /* КАРТОЧКИ РЕЦЕПТОВ */
+    .recipe-row {{
+        background: #FFFFFF;
+        border: 1px solid #E8E1D7;
+        border-radius: 6px;
+        padding: 14px 16px;
+        margin-bottom: 14px;
+    }}
+
+    .recipe-head {{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+    }}
+
+    .recipe-title {{
+        font-family: 'Georgia', serif;
+        font-size: 16px;
+        font-weight: 700;
+        color: #172A21;
+    }}
+
+    .recipe-badge-time {{
+        font-size: 10px;
+        background: #F3EFE9;
+        padding: 3px 8px;
+        border-radius: 10px;
+        color: #61594F;
+        font-weight: 600;
+    }}
+
+    .recipe-macros {{
+        display: flex;
+        gap: 12px;
+        font-size: 11px;
+        background: #F8F6F2;
+        padding: 5px 12px;
+        border-radius: 4px;
+        margin-bottom: 10px;
+        font-weight: 600;
+        color: #4A4237;
+    }}
+
+    .macros-check {{
+        margin-left: auto;
+        color: #C25E3E;
+    }}
+
+    .recipe-content-grid {{
+        display: grid;
+        grid-template-columns: 1fr 1.4fr;
+        gap: 14px;
+        font-size: 11.5px;
+    }}
+
+    .subhead {{
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #8C8275;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }}
+
+    .ing-list {{
+        list-style: none;
+    }}
+
+    .ing-list li {{
+        margin-bottom: 2px;
+        padding-left: 10px;
+        position: relative;
+    }}
+
+    .ing-list li::before {{
+        content: "–";
+        position: absolute;
+        left: 0;
+        color: #C25E3E;
+    }}
+
+    .steps-list {{
+        padding-left: 15px;
+    }}
+
+    .steps-list li {{
+        margin-bottom: 4px;
+    }}
+
+    .secret-box {{
+        background: #FFFDF9;
+        border-left: 3px solid #E2BA82;
+        padding: 6px 10px;
+        margin-top: 8px;
+        font-size: 11px;
+        color: #614D2E;
+    }}
+
+    /* ТРАНСФОРМЕР БЛОК ДЛЯ СЕМЬИ */
+    .transform-split {{
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        background: #FAF7F2;
+        padding: 8px 10px;
+        border-radius: 4px;
+        margin-top: 8px;
+        font-size: 11px;
+    }}
+
+    .transform-col b {{
+        display: block;
+        font-size: 10px;
+        text-transform: uppercase;
+        margin-bottom: 2px;
+    }}
+
+    .col-husband b {{
+        color: #B8502E;
+    }}
+
+    .col-diet b {{
+        color: #246B46;
+    }}
+
+    /* СЕТКА ШПАРГАЛКИ ЗАМЕН */
+    table.compact-table {{
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 11.5px;
+        background: #FFFFFF;
+        border-radius: 4px;
+        overflow: hidden;
+        border: 1px solid #E8E1D7;
+        margin-bottom: 14px;
+    }}
+
+    table.compact-table th {{
+        background: #172A21;
+        color: #FFFFFF;
+        text-align: left;
+        padding: 8px 12px;
+        font-size: 10px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }}
+
+    table.compact-table td {{
+        padding: 8px 12px;
         border-bottom: 1px solid #F0ECE4;
         vertical-align: top;
     }}
 
-    tr:last-child td {{
-        border-bottom: none;
-    }}
-
-    tr:nth-child(even) {{
-        background-color: #FAF8F5;
-    }}
-
-    .table-badge-bad {{
-        color: #A94442;
-        font-weight: 600;
-    }}
-
-    .table-badge-good {{
-        color: #2E6A4F;
-        font-weight: 600;
-    }}
-
-    /* КАРТОЧКА РЕЦЕПТА */
-    .recipe-card {{
-        background: #FFFFFF;
-        border-radius: 8px;
-        border: 1px solid #EBE5DC;
-        padding: 18px;
-        margin-bottom: 16px;
-        box-shadow: 0 2px 8px rgba(0,0,0,0.02);
-    }}
-
-    .recipe-header {{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-        border-bottom: 1px dashed #E5DFD5;
-        padding-bottom: 8px;
-    }}
-
-    .recipe-name {{
-        font-size: 18px;
-        color: #1A3026;
-    }}
-
-    .recipe-time {{
-        background: #FAF2EC;
-        color: #C06C4F;
-        padding: 3px 10px;
-        border-radius: 12px;
-        font-weight: 600;
-        font-size: 11px;
-    }}
-
-    .kbzhu-bar {{
-        display: flex;
-        gap: 15px;
-        background: #F4F6F4;
-        padding: 6px 14px;
-        border-radius: 6px;
-        font-size: 11px;
-        color: #2D4A3E;
-        font-weight: 600;
-        margin-bottom: 12px;
-    }}
-
-    .recipe-body {{
-        display: grid;
-        grid-template-columns: 1fr 1.6fr;
-        gap: 16px;
-    }}
-
-    .ingredients-box h5, .steps-box h5 {{
-        font-size: 12px;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        color: #7A7265;
-        margin-bottom: 6px;
-    }}
-
-    .ingredients-list {{
-        list-style: none;
-    }}
-
-    .ingredients-list li {{
-        margin-bottom: 4px;
-        padding-left: 12px;
-        position: relative;
-        font-size: 12px;
-    }}
-
-    .ingredients-list li::before {{
-        content: "•";
-        color: #C06C4F;
-        position: absolute;
-        left: 0;
-        font-weight: bold;
-    }}
-
-    .steps-list {{
-        padding-left: 18px;
-        font-size: 12px;
-    }}
-
-    .steps-list li {{
-        margin-bottom: 6px;
-    }}
-
-    .chef-tip {{
-        background: #FFFDF8;
-        border: 1px dashed #E2B97F;
-        padding: 8px 12px;
-        border-radius: 6px;
-        margin-top: 10px;
-        font-size: 11px;
-        color: #6C5428;
-    }}
-
-    /* MEAL PREP СХЕМА */
-    .prep-box {{
-        background: #FFFFFF;
-        border-radius: 8px;
-        padding: 20px;
-        margin-bottom: 20px;
-        border: 1px solid #EBE5DC;
-    }}
-
-    .prep-steps-grid {{
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 12px;
-        margin-top: 12px;
-    }}
-
-    .prep-step-card {{
-        background: #F7FAF8;
-        padding: 14px;
-        border-radius: 6px;
-        border-top: 3px solid #2E6A4F;
-    }}
-
-    .prep-step-card h5 {{
-        font-size: 13px;
-        color: #1A3026;
-        margin-bottom: 4px;
-    }}
-
-    /* РАЦИОН СЕТКА */
-    .meal-plan-grid {{
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        gap: 8px;
-        margin-bottom: 20px;
-    }}
-
-    .day-card {{
-        background: #FFFFFF;
-        border: 1px solid #EBE5DC;
-        border-radius: 6px;
-        padding: 10px;
-    }}
-
-    .day-name {{
-        font-weight: 700;
-        font-size: 11px;
-        color: #C06C4F;
-        text-transform: uppercase;
-        margin-bottom: 6px;
-        border-bottom: 1px solid #F0ECE4;
-        padding-bottom: 3px;
-    }}
-
-    .day-meal {{
-        font-size: 10px;
-        margin-bottom: 6px;
-    }}
-
-    .day-meal b {{
-        color: #1A3026;
-        display: block;
-    }}
-
     /* СПИСОК ПОКУПОК */
-    .grocery-grid {{
+    .grocery-columns {{
         display: grid;
         grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-        margin-top: 15px;
+        gap: 12px;
     }}
 
-    .grocery-category {{
+    .grocery-block {{
         background: #FFFFFF;
-        padding: 16px;
-        border-radius: 8px;
-        border: 1px solid #EBE5DC;
+        border: 1px solid #E8E1D7;
+        padding: 12px;
+        border-radius: 4px;
     }}
 
-    .grocery-category h4 {{
-        font-size: 14px;
-        color: #1A3026;
-        border-bottom: 1px solid #E5DFD5;
-        padding-bottom: 6px;
-        margin-bottom: 10px;
+    .grocery-block h5 {{
+        font-family: 'Georgia', serif;
+        font-size: 13px;
+        color: #172A21;
+        border-bottom: 1px solid #E8E1D7;
+        padding-bottom: 4px;
+        margin-bottom: 6px;
     }}
 
-    .grocery-item {{
+    .g-item {{
+        font-size: 11px;
+        margin-bottom: 3px;
         display: flex;
         align-items: center;
-        gap: 8px;
-        margin-bottom: 6px;
-        font-size: 12px;
+        gap: 6px;
     }}
 
-    .checkbox {{
-        width: 14px;
-        height: 14px;
-        border: 1.5px solid #C06C4F;
-        border-radius: 3px;
+    .box-check {{
+        width: 10px;
+        height: 10px;
+        border: 1px solid #C25E3E;
+        border-radius: 2px;
     }}
 </style>
 </head>
 <body>
 
-<!-- СТРАНИЦА 1: ОБЛОЖКА -->
-<div class="cover">
-    <div class="cover-header">
-        <div class="cover-brand">ANASTASIA • CULINARY CLUB</div>
-    </div>
-    
-    <div class="cover-title-block">
-        <h1 class="cover-title">Конструктор Питания<br>& База Рецептов</h1>
-        <p class="cover-subtitle">Флагманское руководство закрытого клуба: 90+ рецептов с КБЖУ, система Meal Prep (еда на 3 дня за вечер), умные рационы для похудения и гид по заменам.</p>
+<!-- СТРАНИЦА 1: ГЛЯНЦЕВАЯ ОБЛОЖКА -->
+<div class="page cover-page">
+    <div class="cover-top">
+        <span class="cover-tag">Анастасия • Закрытый кулинарный клуб</span>
+        <h1 class="cover-title">Кулинарный<br>Конструктор</h1>
+        <p class="cover-desc">Флагманское руководство: сытное похудение без голодовок, семейные блюда-трансформеры (ест муж и дети), система Meal Prep на 3 дня и точный список продуктов из супермаркета.</p>
     </div>
 
-    <div class="cover-photo-wrapper">
+    <div class="cover-image-container">
         <img class="cover-photo" src="data:image/jpeg;base64,{photo_b64}" alt="Анастасия">
     </div>
 
-    <div class="cover-badges">
-        <div class="cover-badge">🍳 90+ Рецептов с КБЖУ</div>
-        <div class="cover-badge">⚡ Пятиминутки для занятых дней</div>
-        <div class="cover-badge">🥡 Meal Prep: 3 дня за 1 час</div>
-        <div class="cover-badge">🛒 Умный список покупок</div>
-        <div class="cover-badge">⚖️ Баланс без диет и срывов</div>
-    </div>
-
-    <div class="cover-footer">
-        <div>Закрытые материалы резидентов приватного канала</div>
-        <div>2026 • Авторская система питания Анастасии</div>
-    </div>
-</div>
-
-<div class="page-break"></div>
-
-<!-- СТРАНИЦА 2: МАНИФЕСТ И ПРИНЦИПЫ -->
-<div class="section-header">
-    <h2 class="section-title">Манифест Легкой Кухни</h2>
-    <span class="section-tag">Введение</span>
-</div>
-
-<div class="manifesto-box">
-    <h3 style="margin-bottom: 8px; color: #1A3026;">Почему диеты не работают, а работает готовая система?</h3>
-    <p>Каждый вечер миллионы девушек задают себе один и тот же выматывающий вопрос: <i>«Что сегодня приготовить?»</i>. В 19:30, после тяжелого рабочего дня, сил стоять у плиты 1.5 часа нет. Итог закономерен: бутерброды, доставка пиццы или пельмени. А на утро — чувство вины, тяжесть в животе и отеки.</p>
-    <br>
-    <p><b>Мой метод — это не диета и не подсчет крошек на кухонных весах.</b> Это технологическая система умных заготовок и конструктора блюд. Когда в холодильнике уже ждут 4 базовых компонента, ресторанный ужин с идеальным балансом КБЖУ собирается всего за <b>12–15 минут</b>. Вы едите пасту, сочные стейки, сырники и десерты — и при этом легко снижаете вес без срывов.</p>
-</div>
-
-<div class="rules-grid">
-    <div class="rule-card">
-        <div class="rule-num">01</div>
-        <h4>Правило Чистого Белка</h4>
-        <p>Каждый прием пищи содержит минимум 25–35 г чистого белка. Это насыщает на 4–5 часов, защищает мышцы от дряблости и отключает вечернюю тягу к сахару.</p>
-    </div>
-    <div class="rule-card">
-        <div class="rule-num">02</div>
-        <h4>Медленные Углеводы</h4>
-        <p>Мы не демонизируем углеводы! Паста из твердых сортов аль денте, киноа, бурый рис и гречка дают энергию мозгу и не провоцируют скачков инсулина.</p>
-    </div>
-    <div class="rule-card">
-        <div class="rule-num">03</div>
-        <h4>Эстетика Pinterest</h4>
-        <p>Мозг насыщается глазами. Красивая тарелка, контраст ярких овощей и хрустящая зелень делают домашний ужин свиданием с собой, а не рутиной.</p>
-    </div>
-</div>
-
-<!-- ТАБЛИЦА ЗАМЕН -->
-<div class="section-header" style="margin-top: 30px;">
-    <h2 class="section-title">Таблица Замен: Вкуснее и на 40% легче</h2>
-    <span class="section-tag">Секреты стройности</span>
-</div>
-
-<table>
-    <thead>
-        <tr>
-            <th>Привычный продукт</th>
-            <th>Умная альтернатива Анастасии</th>
-            <th>В чем профит для фигуры</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><span class="table-badge-bad">Белый сахар</span> в соусах и выпечке</td>
-            <td><span class="table-badge-good">Эритрит, FitParad №7, яблочное пюре</span></td>
-            <td>0 ккал, 0 гликемический индекс, чистая кожа без высыпаний</td>
-        </tr>
-        <tr>
-            <td><span class="table-badge-bad">Майонез</span> и тяжелые заправки</td>
-            <td><span class="table-badge-good">Греческий йогурт 2% + дижонская горчица + лимон</span></td>
-            <td>В 4 раза меньше калорий, соус бархатистый с ноткой прованских трав</td>
-        </tr>
-        <tr>
-            <td><span class="table-badge-bad">Белая мука высшего сорта</span></td>
-            <td><span class="table-badge-good">Рисовая мука (сырники) + овсяная мука</span></td>
-            <td>Сырники не плывут, нежная шелковистая текстура, нет глютеновой тяжести</td>
-        </tr>
-        <tr>
-            <td><span class="table-badge-bad">Жирные сливки 33%</span></td>
-            <td><span class="table-badge-good">Сливки 10% + крахмальная вода из-под пасты</span></td>
-            <td>Крахмал взбивает легкие сливки в шелковую эмульсию без лишнего жира</td>
-        </tr>
-        <tr>
-            <td><span class="table-badge-bad">Панировочные сухари</span></td>
-            <td><span class="table-badge-good">Кукурузный крахмал тонким слоем</span></td>
-            <td>Стеклянная тонкая корочка ресторанного уровня, впитывает в 3 раза меньше масла</td>
-        </tr>
-        <tr>
-            <td><span class="table-badge-bad">Подсолнечное рафинированное масло</span></td>
-            <td><span class="table-badge-good">Масло Гхи для жарки + оливковое Extra Virgin в спрее</span></td>
-            <td>Высокая точка дымления без канцерогенов + дозированный расход (1 пшик = 1 г)</td>
-        </tr>
-    </tbody>
-</table>
-
-<div class="page-break"></div>
-
-<!-- СТРАНИЦА 3: СИСТЕМА MEAL PREP -->
-<div class="section-header">
-    <h2 class="section-title">Система Meal Prep: 1 час в воскресенье = 3 свободных дня</h2>
-    <span class="section-tag">Организация кухни</span>
-</div>
-
-<div class="prep-box">
-    <h3 style="margin-bottom: 8px;">Суть метода умных заготовок</h3>
-    <p>Мы не готовим суп на 5 дней вперед, который к среде скисает и надоедает. Мы готовим <b>4 модульных конструктора</b>, из которых каждый вечер за 10 минут собирается новое свежее ресторанное блюдо!</p>
-
-    <div class="prep-steps-grid">
-        <div class="prep-step-card">
-            <h5>1. Базовый белок (40 мин)</h5>
-            <p>Филе индейки или курицы запекается в пергаменте с прованскими травами и чесноком при 175°C. Остается сочным 4 дня в контейнере.</p>
+    <div class="cover-bottom">
+        <div class="cover-features">
+            <span class="feature-pill">🥗 Сытное похудение</span>
+            <span class="feature-pill">👨‍👩‍👧‍👦 Еда для всей семьи</span>
+            <span class="feature-pill">🥡 Meal Prep на 3 дня</span>
+            <span class="feature-pill">🛒 Чек-лист для супермаркета</span>
         </div>
-        <div class="prep-step-card">
-            <h5>2. Запеченные овощи (30 мин)</h5>
-            <p>Цветная капуста, кабачки, тыква и брокколи, сбрызнутые оливковым маслом и паприкой. Хранятся в стекле 3–4 дня.</p>
-        </div>
-        <div class="prep-step-card">
-            <h5>3. Сложный углевод (20 мин)</h5>
-            <p>Отваренная киноа или булгур со сливочным маслом гхи и щепоткой сушеного чеснока. Рассыпчатая база на несколько дней.</p>
-        </div>
-        <div class="prep-step-card">
-            <h5>4. Авторский соус (5 мин)</h5>
-            <p>Взбитый авокадо с кинзой, соком лайма, греческим йогуртом и морской солью. Превращает любое блюдо в шедевр.</p>
+        <div class="cover-meta">
+            <span>ЗАКРЫТЫЕ МАТЕРИАЛЫ КЛУБА</span>
+            <span>2026 • АВТОРСКАЯ СИСТЕМА</span>
         </div>
     </div>
 </div>
 
-<h3 style="margin-bottom: 12px; color: #1A3026;">Конструктор: 3 блюда из этих заготовок за 5 минут</h3>
-
-<table>
-    <thead>
-        <tr>
-            <th style="width: 20%;">День недели</th>
-            <th style="width: 35%;">Блюдо из конструктора</th>
-            <th style="width: 45%;">Как собрать за 5 минут</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td><b>Понедельник</b></td>
-            <td><b>Калифорнийский боул с индейкой и киноа</b></td>
-            <td>В миску положить теплую киноа, ломтики сочной индейки, запеченные овощи, половину авокадо. Полить соусом и посыпать кунжутом.</td>
-        </tr>
-        <tr>
-            <td><b>Вторник</b></td>
-            <td><b>Теплый салат с хрустящей курочкой и фетой</b></td>
-            <td>Микс свежей зелени, нарезанное филе индейки, запеченная тыква, кусочки сыра фета, грецкий орех. Заправка: капля оливкового масла и бальзамик.</td>
-        </tr>
-        <tr>
-            <td><b>Среда</b></td>
-            <td><b>Стир-фрай по-азиатски за 6 минут</b></td>
-            <td>На раскаленной сковороде прогреть запеченные овощи с индейкой, добавить 1 ст.л. соевого соуса, чеснок и подать на подушке из теплого булгура.</td>
-        </tr>
-    </tbody>
-</table>
-
-<!-- ХРАНЕНИЕ ПРОДУКТОВ -->
-<div class="section-header" style="margin-top: 25px;">
-    <h2 class="section-title">Гайд по хранению: Зелень свежая 3 недели</h2>
-    <span class="section-tag">Zero Waste</span>
-</div>
-
-<div class="rules-grid">
-    <div class="rule-card">
-        <h4>Зелень как букет</h4>
-        <p>Срежьте кончики кинзы/петрушки и поставьте в банку с 3 см холодной воды, накрыв сверху пакетом. Зелень стоит хрустящей до 20 дней!</p>
+<!-- СТРАНИЦА 2: МАНИФЕСТ + ФИЛОСОФИЯ 2 ВЕТОК -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Концепция и принципы</span>
+        <span class="header-page-title">Хватит готовить в два котла</span>
     </div>
-    <div class="rule-card">
-        <h4>Томаты без холодильника</h4>
-        <p>Храните спелые томаты только при комнатной температуре плодоножкой вниз. Холод убивает их сладость и разрушает ароматные эфиры.</p>
+
+    <div class="manifesto-banner">
+        <h3>Главная боль: почему диеты рушат отношения и силы?</h3>
+        <p>Каждая девушка, начиная худеть, попадает в ловушку: <i>«Себе варю сухую грудку и брокколи, а мужу и детям жарю котлеты с пюре»</i>. Через неделю наступает выгорание от бесконечной посуды, а в субботу случается неизбежный срыв на семейный ужин.</p>
+        <p style="margin-top: 6px;"><b>Мое золотое правило:</b> Мы готовим <u>одно базовое блюдо на всех</u>. Но благодаря умной системе сборки («трансформер»), муж получает плотный калорийный ужин, а вы — легкую порцию с дефицитом калорий и плоским животом на утро!</p>
     </div>
-    <div class="rule-card">
-        <h4>Шоковая заморозка ягод</h4>
-        <p>Ягоды промойте, обсушите на полотенце и заморозьте в один слой на доске, затем ссыпьте в зип-пакет. Никакой слипшейся каши!</p>
+
+    <div class="dual-columns">
+        <div class="info-card">
+            <h4><span class="tag-badge tag-slimming">Ветка 1</span> Сытное похудение</h4>
+            <p><b>Формула «35г белка + объём»:</b> Никаких голодных салатиков из листьев! Мы едим сочное мясо, рыбу, теплые сытные овощи и морепродукты.</p>
+            <p style="margin-top: 6px; color: #555;">Чистый белок и медленные углеводы выключают вечерний жор и непреодолимую тягу к сладкому.</p>
+        </div>
+        <div class="info-card">
+            <h4><span class="tag-badge tag-family">Ветка 2</span> Блюда для всей семьи</h4>
+            <p><b>Метод «Основа + Топпинг»:</b> Готовится богатая мясная основа (томленая индейка, запеченная курочка, сочные тефтели).</p>
+            <p style="margin-top: 6px; color: #555;">Муж добирает энергию гарниром (паста/картофель), а вы — хрустящей спаржей, черри и свежей зеленью.</p>
+        </div>
+    </div>
+
+    <div class="manifesto-banner" style="border-left-color: #246B46;">
+        <h3>3 правила, чтобы худеть без чувства голода</h3>
+        <ul style="padding-left: 18px; margin-top: 6px; font-size: 12px;">
+            <li><b>Белок в каждом приеме:</b> 30–35 г белка защищают мышцы от дряблости и разгоняют метаболизм на 25%.</li>
+            <li><b>Секрет крахмала:</b> кукурузный крахмал вместо муки и сухарей дает хрустящую корочку и впитывает в 3 раза меньше масла.</li>
+            <li><b>Соусы без майонеза:</b> греческий йогурт + дижонская горчица + лимон делают вкус как в ресторане без лишних калорий.</li>
+        </ul>
+    </div>
+
+    <div class="page-footer">
+        <span>КОНСТРУКТОР ПИТАНИЯ АНАСТАСИИ</span>
+        <span>02</span>
     </div>
 </div>
 
-<div class="page-break"></div>
+<!-- СТРАНИЦА 3: ВЕТКА 1 — СЫТНОЕ ПОХУДЕНИЕ -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Ветка 1: Для Себя</span>
+        <span class="header-page-title">Сытное похудение: Экспресс-ужины</span>
+    </div>
 
-<!-- СТРАНИЦА 4: ФЛАГМАНСКИЕ РЕЦЕПТЫ — ЗАВТРАКИ -->
-<div class="section-header">
-    <h2 class="section-title">Каталог Рецептов: Завтраки для метаболизма</h2>
-    <span class="section-tag">Глава 1</span>
-</div>
+    <!-- РЕЦЕПТ 1 -->
+    <div class="recipe-row">
+        <div class="recipe-head">
+            <span class="recipe-title">1. Нежное филе в сливочно-томатном соусе с черри</span>
+            <span class="recipe-badge-time">⏱ 18 минут</span>
+        </div>
+        <div class="recipe-macros">
+            <span>320 ккал</span>
+            <span>Белки: 38 г</span>
+            <span>Жиры: 11 г</span>
+            <span>Углеводы: 7 г</span>
+            <span class="macros-check">Чек в Магните: ~148 ₽</span>
+        </div>
+        <div class="recipe-content-grid">
+            <div>
+                <div class="subhead">Ингредиенты:</div>
+                <ul class="ing-list">
+                    <li>Куриное филе — 180 г</li>
+                    <li>Черри свежие — 80 г</li>
+                    <li>Сливки 10% питьевые — 60 мл</li>
+                    <li>Чеснок 1 зуб., паприка, базилик</li>
+                    <li>Оливковое масло — 1 ч. л.</li>
+                </ul>
+            </div>
+            <div>
+                <div class="subhead">Приготовление:</div>
+                <ol class="steps-list">
+                    <li>Филе нарезать ломтиками, обжарить на сильном огне 3 мин до золотистости.</li>
+                    <li>Бросить половинки черри и чеснок, тушить 2 мин до ароматного сока.</li>
+                    <li>Влить 10% сливки, убавить огонь и томить 5 мин до бархатного соуса.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="secret-box">
+            💡 <b>Лайфхак:</b> Нежирные 10% сливки связываются с кислотой томатов черри и дают густой соус без муки!
+        </div>
+    </div>
 
-<!-- РЕЦЕПТ 1 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">1. Пышные ПП-сырники без муки и сахара</h3>
-        <span class="recipe-time">⏱ 15 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>295 ккал</b></span>
-        <span>Белки: <b>32 г</b></span>
-        <span>Жиры: <b>9 г</b></span>
-        <span>Углеводы: <b>18 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~119 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Творог 5% в брикете (180 г)</li>
-                <li>Яичный желток (1 шт)</li>
-                <li>Рисовая мука (1.5 ст. л., 20 г)</li>
-                <li>FitParad №7 (2 саше) + ванилин</li>
-                <li>Ягоды вишни/малины (40 г)</li>
-            </ul>
+    <!-- РЕЦЕПТ 2 -->
+    <div class="recipe-row">
+        <div class="recipe-head">
+            <span class="recipe-title">2. Хрустящие баклажаны со страчателлой и чили</span>
+            <span class="recipe-badge-time">⏱ 15 минут</span>
         </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Творог размять вилкой с желтком, подсластителем и 1 ст.л. муки. Тесто должно быть плотным.</li>
-                <li>Сформировать 3 шайбы с помощью стакана, обвалять в остатках рисовой муки.</li>
-                <li>Обжарить на сковороде под крышкой на медленном огне по 4 мин с каждой стороны.</li>
-                <li>Ягоды прогреть в сотейнике с 1 ложкой воды и полить теплые сырники.</li>
-            </ol>
+        <div class="recipe-macros">
+            <span>280 ккал</span>
+            <span>Белки: 12 г</span>
+            <span>Жиры: 14 г</span>
+            <span>Углеводы: 24 г</span>
+            <span class="macros-check">Чек в Магните: ~160 ₽</span>
+        </div>
+        <div class="recipe-content-grid">
+            <div>
+                <div class="subhead">Ингредиенты:</div>
+                <ul class="ing-list">
+                    <li>Баклажан средний — 180 г</li>
+                    <li>Томаты спелые — 120 г</li>
+                    <li>Страчателла / легкий сыр — 50 г</li>
+                    <li>Кукурузный крахмал — 1.5 ст. л.</li>
+                    <li>Соус сладкий чили, кинза, кунжут</li>
+                </ul>
+            </div>
+            <div>
+                <div class="subhead">Приготовление:</div>
+                <ol class="steps-list">
+                    <li>Баклажан очистить полосками, нарезать кубиком 3 см, сбрызнуть водой и обвалять в крахмале.</li>
+                    <li>Обжарить в горячем масле 3 мин до звонкого хруста.</li>
+                    <li>На ломтики томатов выложить горячие баклажаны, сыр, полить чили и кинзой.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="secret-box">
+            💡 <b>Лайфхак:</b> Контраст горячих баклажанов и холодного сыра дает ресторанный дофамин без срывов на фастфуд.
         </div>
     </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Берите только сухой брикетный творог 5% (не зерненый в сливках). Рисовая мука не утяжеляет тесто, сырники тают во рту.
-    </div>
-</div>
 
-<!-- РЕЦЕПТ 2 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">2. Овсяноблин с слабосоленым лососем и авокадо</h3>
-        <span class="recipe-time">⏱ 10 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>365 ккал</b></span>
-        <span>Белки: <b>24 г</b></span>
-        <span>Жиры: <b>15 г</b></span>
-        <span>Углеводы: <b>28 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~195 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Овсяные хлопья долгой варки (40 г)</li>
-                <li>Яйцо С0 (1 шт) + белок (1 шт)</li>
-                <li>Молоко 1.5% или вода (40 мл)</li>
-                <li>Творожный легкий сыр (30 г)</li>
-                <li>Слабосоленый лосось (50 г) + огурец</li>
-            </ul>
+    <!-- РЕЦЕПТ 3 -->
+    <div class="recipe-row" style="margin-bottom: 0;">
+        <div class="recipe-head">
+            <span class="recipe-title">3. Протеиновый боул с тунцом, яйцом и стручковой фасолью</span>
+            <span class="recipe-badge-time">⏱ 10 минут</span>
         </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Овсянку, яйцо, белок и молоко взбить блендером или вилкой со щепоткой соли.</li>
-                <li>Вылить на горячую сухую антипригарную сковороду, выпекать под крышкой по 2.5 мин с каждой стороны.</li>
-                <li>Половину горячего блина смазать творожным сыром, выложить ломтики лосося и тонкие слайсы огурца.</li>
-                <li>Накрыть второй половиной и разрезать пополам.</li>
-            </ol>
+        <div class="recipe-macros">
+            <span>340 ккал</span>
+            <span>Белки: 36 г</span>
+            <span>Жиры: 12 г</span>
+            <span>Углеводы: 18 г</span>
+            <span class="macros-check">Чек в Магните: ~171 ₽</span>
+        </div>
+        <div class="recipe-content-grid">
+            <div>
+                <div class="subhead">Ингредиенты:</div>
+                <ul class="ing-list">
+                    <li>Тунец в с/с (банка) — 130 г</li>
+                    <li>Яйцо С0 всмятку — 1 шт</li>
+                    <li>Стручковая фасоль — 120 г</li>
+                    <li>Свежий огурец — 80 г</li>
+                    <li>Заправка: лимон + горчица + масло</li>
+                </ul>
+            </div>
+            <div>
+                <div class="subhead">Приготовление:</div>
+                <ol class="steps-list">
+                    <li>Фасоль отварить 4 мин в подсоленной воде и обдать ледяной водой.</li>
+                    <li>В чашу выложить фасоль, тунец, огурец и яйцо с жидким желтком.</li>
+                    <li>Сбрызнуть лимонно-горчичной заправкой. Рекордная сытость за 10 минут!</li>
+                </ol>
+            </div>
         </div>
     </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Добавление одного дополнительного белка дает идеальную пышность и +7 г чистого белка без лишнего жира.
-    </div>
-</div>
 
-<!-- РЕЦЕПТ 3 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">3. Итальянская фриттата со шпинатом и сыром фета</h3>
-        <span class="recipe-time">⏱ 12 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>310 ккал</b></span>
-        <span>Белки: <b>26 г</b></span>
-        <span>Жиры: <b>18 г</b></span>
-        <span>Углеводы: <b>6 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~140 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Яйца С0 (3 шт)</li>
-                <li>Шпинат свежий или замороженный (70 г)</li>
-                <li>Томаты черри (4-5 шт)</li>
-                <li>Сыр фета или брынза (40 г)</li>
-                <li>Сушеный орегано, черри, соль</li>
-            </ul>
-        </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Шпинат припустить на сковороде 1 минуту, добавить половинки черри.</li>
-                <li>Яйца взбить венчиком со щепоткой соли и орегано, вылить на сковороду к овощам.</li>
-                <li>Сверху раскрошить фету. Накрыть крышкой и готовить на минимальном огне 7–8 минут.</li>
-            </ol>
-        </div>
-    </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Не перемешивайте яйца на сковороде! Фриттата должна подняться как воздушный омлетный пирог.
-    </div>
-</div>
-
-<div class="page-break"></div>
-
-<!-- СТРАНИЦА 5: ФЛАГМАНСКИЕ РЕЦЕПТЫ — ОБЕДЫ -->
-<div class="section-header">
-    <h2 class="section-title">Каталог Рецептов: Сытные сбалансированные обеды</h2>
-    <span class="section-tag">Глава 2</span>
-</div>
-
-<!-- РЕЦЕПТ 4 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">4. ПП-паста из твердых сортов с индейкой и шпинатом</h3>
-        <span class="recipe-time">⏱ 15 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>390 ккал</b></span>
-        <span>Белки: <b>34 г</b></span>
-        <span>Жиры: <b>9 г</b></span>
-        <span>Углеводы: <b>42 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~153 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Паста Barilla из твердых сортов (60 г сухой)</li>
-                <li>Филе индейки (150 г)</li>
-                <li>Шпинат свежий (60 г)</li>
-                <li>Греческий йогурт Teos 2% (50 г)</li>
-                <li>Мускатный орех, чеснок (1 зубчик)</li>
-            </ul>
-        </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Пасту отварить аль денте. Обязательно сохранить 3 ст.л. воды из кастрюли!</li>
-                <li>Индейку быстро обжарить 4 мин, добавить шпинат и чеснок.</li>
-                <li>Ввести йогурт, мускатный орех и 3 ложки крахмальной воды для эмульсии.</li>
-                <li>Соединить соус с горячей пастой и перемешать 1 минуту.</li>
-            </ol>
-        </div>
-    </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Паста аль денте имеет низкий ГИ и не откладывается на талии, а мускатный орех делает соус неотличимым от жирного Альфредо.
+    <div class="page-footer">
+        <span>КОНСТРУКТОР ПИТАНИЯ АНАСТАСИИ</span>
+        <span>03</span>
     </div>
 </div>
 
-<!-- РЕЦЕПТ 5 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">5. Прованский боул с киноа, сочной курицей и печеным перцем</h3>
-        <span class="recipe-time">⏱ 15 минут</span>
+<!-- СТРАНИЦА 4: ВЕТКА 2 — СЕМЕЙНЫЕ БЛЮДА-ТРАНСФОРМЕРЫ -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Ветка 2: Для Всей Семьи</span>
+        <span class="header-page-title">Блюда-трансформеры (ест муж и дети)</span>
     </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>410 ккал</b></span>
-        <span>Белки: <b>38 г</b></span>
-        <span>Жиры: <b>11 г</b></span>
-        <span>Углеводы: <b>40 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~165 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Киноа отваренная (120 г)</li>
-                <li>Куриное филе гриль (150 г)</li>
-                <li>Перец болгарский запеченный (80 г)</li>
-                <li>Огурец свежий + руккола (50 г)</li>
-                <li>Заправка: 1 ч.л. масла + сок лимона</li>
-            </ul>
+
+    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 1 -->
+    <div class="recipe-row">
+        <div class="recipe-head">
+            <span class="recipe-title">1. Нежнейшие тефтели в томатно-сливочном соусе с цукини</span>
+            <span class="recipe-badge-time">⏱ 25 минут</span>
         </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Киноа прогреть. Курицу нарезать слайсами под углом 45 градусов.</li>
-                <li>Сладкий перец быстро обжарить или взять из воскресных заготовок.</li>
-                <li>Выложить в боул секторами: киноа, рукколу, курицу, перец и огурец.</li>
-                <li>Сбрызнуть лимонно-оливковой заправкой и присыпать тыквенными семечками.</li>
-            </ol>
+        <div class="recipe-content-grid">
+            <div>
+                <div class="subhead">Секретная основа:</div>
+                <ul class="ing-list">
+                    <li>Фарш индейка/говядина — 500 г</li>
+                    <li>Кабачок/цукини тертый — 150 г (сочность!)</li>
+                    <li>Томаты протертые (passata) — 300 мл</li>
+                    <li>Сливки 10% — 70 мл, чеснок, базилик</li>
+                </ul>
+            </div>
+            <div>
+                <div class="subhead">Приготовление:</div>
+                <ol class="steps-list">
+                    <li>Кабачок натереть на мелкой терке, отжать и вмешать в фарш без хлеба!</li>
+                    <li>Сформировать тефтели, обжарить 4 мин, залить томатами и сливками.</li>
+                    <li>Томить под крышкой 15 минут. Тефтели тают во рту.</li>
+                </ol>
+            </div>
+        </div>
+        <div class="transform-split">
+            <div class="transform-col col-husband">
+                <b>👨 Подача для мужа и детей:</b>
+                Щедрая порция тефтелей с макаронами или картофельным пюре, густо политая соусом и посыпанная сыром.
+            </div>
+            <div class="transform-col col-diet">
+                <b>💃 Подача для себя (похудение):</b>
+                3 тефтели с соусом на подушке из свежей рукколы, шпината или брокколи на пару. Всего 330 ккал и 34г белка!
+            </div>
         </div>
     </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Киноа — чемпион среди круп по растительному белку и незаменимым аминокислотам. Насыщает на весь рабочий день.
+
+    <!-- СЕМЕЙНЫЙ РЕЦЕПТ 2 -->
+    <div class="recipe-row" style="margin-bottom: 0;">
+        <div class="recipe-head">
+            <span class="recipe-title">2. Сочная куриная грудка под сырно-овощной шубкой (Sheet Pan)</span>
+            <span class="recipe-badge-time">⏱ 25 минут в духовке</span>
+        </div>
+        <div class="recipe-content-grid">
+            <div>
+                <div class="subhead">Основа на противень:</div>
+                <ul class="ing-list">
+                    <li>Филе грудки — 4 шт (по 180 г)</li>
+                    <li>Томаты спелые кольцами — 2 шт</li>
+                    <li>Сладкий перец соломкой — 1 шт</li>
+                    <li>Сыр сулугуни/моцарелла — 80 г</li>
+                    <li>Сметана 10% + чеснок + укроп</li>
+                </ul>
+            </div>
+            <div>
+                <div class="subhead">Приготовление:</div>
+                <ol class="steps-list">
+                    <li>Филе слегка надрезать сеткой, смазать соусом из сметаны и чеснока.</li>
+                    <li>Выложить кружочки томатов, сладкий перец и присыпать сыром.</li>
+                    <li>Запекать при 190°C ровно 22–24 минуты. Никакой сухости!</li>
+                </ol>
+            </div>
+        </div>
+        <div class="transform-split">
+            <div class="transform-col col-husband">
+                <b>👨 Подача для мужа и детей:</b>
+                Филе под сыром с запеченными дольками картофеля по-деревенски со сливочным маслом.
+            </div>
+            <div class="transform-col col-diet">
+                <b>💃 Подача для себя (похудение):</b>
+                Филе под сыром с большой порцией теплого салата из свежих огурцов и зелени. Чистый белок без лишнего жира!
+            </div>
+        </div>
+    </div>
+
+    <div class="page-footer">
+        <span>КОНСТРУКТОР ПИТАНИЯ АНАСТАСИИ</span>
+        <span>04</span>
     </div>
 </div>
 
-<!-- РЕЦЕПТ 6 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">6. Бархатный тыквенный суп-пюре с тигровыми креветками</h3>
-        <span class="recipe-time">⏱ 20 минут</span>
+<!-- СТРАНИЦА 5: MEAL PREP НА 3 ДНЯ + ПЯТИМИНУТКИ -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Организация и скорость</span>
+        <span class="header-page-title">Meal Prep на 3 дня & Экспресс-пятиминутки</span>
     </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>280 ккал</b></span>
-        <span>Белки: <b>22 г</b></span>
-        <span>Жиры: <b>10 г</b></span>
-        <span>Углеводы: <b>22 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~185 ₽</span>
+
+    <div class="manifesto-banner" style="margin-bottom: 14px;">
+        <h3>Воскресный Sheet Pan: 1 противень = 3 дня свободы</h3>
+        <p>Застелите большой противень пергаментом. Слева выложите филе индейки в травах, справа — крупно нарезанные овощи (кабачок, тыква, перец, цветная капуста). Запекайте 35 минут при 180°C. <b>У вас готова сочная белковая база и гарнир на 3 дня!</b></p>
     </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Тыква баттернат (250 г)</li>
-                <li>Морковь (50 г) + лук-порей (30 г)</li>
-                <li>Креветки очищенные (100 г)</li>
-                <li>Кокосовое молоко 17% (50 мл)</li>
-                <li>Имбирь свежий (щепотка), мускатный орех</li>
-            </ul>
+
+    <h4 style="font-family: 'Georgia', serif; font-size: 16px; margin-bottom: 10px; color: #172A21;">⚡ Топ-3 экспресс-пятиминутки (когда совсем нет сил)</h4>
+
+    <div class="recipe-row">
+        <div class="recipe-head">
+            <span class="recipe-title">1. Шакшука за 7 минут в одной сковороде</span>
+            <span class="recipe-badge-time">285 ккал • Б: 22 г</span>
         </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Тыкву и морковь отварить в небольшом количестве воды с кусочком имбиря до мягкости (12 мин).</li>
-                <li>Слить часть бульона, влить кокосовое молоко и пробить блендером в шелковое пюре.</li>
-                <li>Креветки обжарить с чесноком ровно 2 минуты.</li>
-                <li>Налить суп в глубокую тарелку, выложить креветки и посыпать семечками.</li>
-            </ol>
-        </div>
+        <p style="font-size: 11.5px; color: #444;">В сковороде прогреть 3 ложки протертых томатов passata с чесноком и паприкой (1 мин). Разбить 2 яйца, бросить горсть черри и кубики брынзы. Накрыть крышкой на 4 минуты. Есть прямо из сковороды с зеленью!</p>
     </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Имбирь разгоняет обмен веществ и снимает приторную сладость тыквы, превращая суп в ресторанный шедевр.
+
+    <div class="recipe-row">
+        <div class="recipe-head">
+            <span class="recipe-title">2. ПП-шаурма в лаваше с сочной индейкой из заготовок</span>
+            <span class="recipe-badge-time">310 ккал • Б: 32 г</span>
+        </div>
+        <p style="font-size: 11.5px; color: #444;">Тонкий лаваш смазать соусом из греческого йогурта с горчицей. Выложить нарезанную запеченную индейку, хрустящий огурец, томат и пекинскую капусту. Свернуть и прогреть на сухой сковороде по 1.5 мин до хруста.</p>
+    </div>
+
+    <div class="recipe-row" style="margin-bottom: 0;">
+        <div class="recipe-head">
+            <span class="recipe-title">3. Творожный мусс «Пломбир» с ягодами за 3 минуты</span>
+            <span class="recipe-badge-time">220 ккал • Б: 28 г</span>
+        </div>
+        <p style="font-size: 11.5px; color: #444;">Пачку мягкого творога 5% взбить погружным блендером с 1 саше FitParad, ванилином и 30 мл молока. Получается текстура растаявшего мороженого! Полить теплым ягодным пюре из микроволновки.</p>
+    </div>
+
+    <div class="page-footer">
+        <span>КОНСТРУКТОР ПИТАНИЯ АНАСТАСИИ</span>
+        <span>05</span>
     </div>
 </div>
 
-<div class="page-break"></div>
+<!-- СТРАНИЦА 6: ТАБЛИЦА ЗАМЕН И СПИСОК ПОКУПОК -->
+<div class="page">
+    <div class="page-header">
+        <span class="header-category">Шпаргалка Супермаркета</span>
+        <span class="header-page-title">Замены продуктов и список покупок</span>
+    </div>
 
-<!-- СТРАНИЦА 6: ФЛАГМАНСКИЕ РЕЦЕПТЫ — УЖИНЫ -->
-<div class="section-header">
-    <h2 class="section-title">Каталог Рецептов: Легкие ужины для плоского живота</h2>
-    <span class="section-tag">Глава 3</span>
-</div>
+    <table class="compact-table">
+        <thead>
+            <tr>
+                <th style="width: 28%;">Вредный продукт</th>
+                <th style="width: 37%;">Умная замена Анастасии</th>
+                <th style="width: 35%;">Почему это работает</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Белый сахар</b></td>
+                <td>Эритрит или FitParad №7</td>
+                <td>0 калорий, нет инсулиновых качелей и чистая кожа</td>
+            </tr>
+            <tr>
+                <td><b>Майонез / Цезарь соус</b></td>
+                <td>Йогурт Teos + дижонская горчица + соевый</td>
+                <td>В 4 раза меньше жира, богатый шелковистый вкус</td>
+            </tr>
+            <tr>
+                <td><b>Белая мука в сырниках</b></td>
+                <td>Рисовая мука (1.5 ст. л.)</td>
+                <td>Сырники держат форму, нет глютеновой тяжести</td>
+            </tr>
+            <tr>
+                <td><b>Панировочные сухари</b></td>
+                <td>Кукурузный крахмал тонким слоем</td>
+                <td>Стеклянный хруст в баклажанах и мясе без лишнего масла</td>
+            </tr>
+        </tbody>
+    </table>
 
-<!-- РЕЦЕПТ 7 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">7. Курочка в сливочно-томатном соусе с черри</h3>
-        <span class="recipe-time">⏱ 18 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>320 ккал</b></span>
-        <span>Белки: <b>38 г</b></span>
-        <span>Жиры: <b>11 г</b></span>
-        <span>Углеводы: <b>7 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~148 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Филе куриной грудки (180 г)</li>
-                <li>Томаты черри (80 г)</li>
-                <li>Сливки 10% питьевые (60 мл)</li>
-                <li>Чеснок (1 зубчик), паприка, базилик</li>
-                <li>Оливковое масло (1 ч. л.)</li>
-            </ul>
-        </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Филе нарезать кусочками, приправить солью, паприкой и базиликом.</li>
-                <li>Обжарить на сильном огне 3 мин до золотистой корочки.</li>
-                <li>Добавить половинки черри и чеснок, тушить 2 мин до сока.</li>
-                <li>Влить 10% сливки, убавить огонь и тушить 5 мин до загустения.</li>
-            </ol>
-        </div>
-    </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Томатный сок черри вступает в реакцию со сливками и дает идеальную густоту без добавления муки или крахмала.
-    </div>
-</div>
+    <h4 style="font-family: 'Georgia', serif; font-size: 15px; margin-bottom: 10px; color: #172A21;">🛒 Базовый список продуктов на неделю (Пятёрочка / Магнит)</h4>
 
-<!-- РЕЦЕПТ 8 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">8. Хрустящие баклажаны со страчателлой и сладким чили</h3>
-        <span class="recipe-time">⏱ 15 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>280 ккал</b></span>
-        <span>Белки: <b>12 г</b></span>
-        <span>Жиры: <b>14 г</b></span>
-        <span>Углеводы: <b>24 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~160 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Баклажан средний (180 г)</li>
-                <li>Томаты спелые (120 г)</li>
-                <li>Страчателла или легкий сыр (50 г)</li>
-                <li>Кукурузный крахмал (1.5 ст. л.)</li>
-                <li>Соус сладкий чили + кинза, кунжут</li>
-            </ul>
+    <div class="grocery-columns">
+        <div class="grocery-block">
+            <h5>Мясо и Птица</h5>
+            <div class="g-item"><div class="box-check"></div> Куриное филе — 800 г</div>
+            <div class="g-item"><div class="box-check"></div> Фарш индейки — 500 г</div>
+            <div class="g-item"><div class="box-check"></div> Тунец в с/с — 2 банки</div>
+            <div class="g-item"><div class="box-check"></div> Яйца С0 — 1 десяток</div>
         </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Баклажан очистить полосками, нарезать кубиками 3х3 см.</li>
-                <li>Сбрызнуть водой, обвалять в кукурузном крахмале.</li>
-                <li>Обжарить в горячем масле 3–4 мин до золотистого хруста.</li>
-                <li>На томаты выложить горячие баклажаны, сыр, полить чили и кинзой.</li>
-            </ol>
+
+        <div class="grocery-block">
+            <h5>Овощи и Зелень</h5>
+            <div class="g-item"><div class="box-check"></div> Томаты черри — 2 уп</div>
+            <div class="g-item"><div class="box-check"></div> Баклажаны — 2 шт</div>
+            <div class="g-item"><div class="box-check"></div> Кабачок / цукини — 2 шт</div>
+            <div class="g-item"><div class="box-check"></div> Шпинат / кинза — 2 уп</div>
+            <div class="g-item"><div class="box-check"></div> Стручковая фасоль — 1 уп</div>
+        </div>
+
+        <div class="grocery-block">
+            <h5>Молочка и Бакалея</h5>
+            <div class="g-item"><div class="box-check"></div> Творог 5% в брикете — 2 уп</div>
+            <div class="g-item"><div class="box-check"></div> Сливки 10% — 200 мл</div>
+            <div class="g-item"><div class="box-check"></div> Греческий йогурт Teos — 2 шт</div>
+            <div class="g-item"><div class="box-check"></div> Сыр страчателла/сулугуни</div>
+            <div class="g-item"><div class="box-check"></div> Крахмал кукурузный</div>
         </div>
     </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Подавайте сразу горячим. Контраст хруста и нежного сыра отключает любую потребность в десерте!
-    </div>
-</div>
 
-<!-- РЕЦЕПТ 9 -->
-<div class="recipe-card avoid-break">
-    <div class="recipe-header">
-        <h3 class="recipe-name">9. Лосось в медово-горчичной глазури с брокколи на пару</h3>
-        <span class="recipe-time">⏱ 18 минут</span>
-    </div>
-    <div class="kbzhu-bar">
-        <span>Калории: <b>370 ккал</b></span>
-        <span>Белки: <b>35 г</b></span>
-        <span>Жиры: <b>17 г</b></span>
-        <span>Углеводы: <b>12 г</b></span>
-        <span style="color: #C06C4F; margin-left: auto;">Чек: ~240 ₽</span>
-    </div>
-    <div class="recipe-body">
-        <div class="ingredients-box">
-            <h5>Ингредиенты:</h5>
-            <ul class="ingredients-list">
-                <li>Стейк лосося или форели (180 г)</li>
-                <li>Брокколи свежая или с/м (150 г)</li>
-                <li>Соевый соус (1 ст. л.)</li>
-                <li>Дижонская зернистая горчица (1 ч. л.)</li>
-                <li>Мёд натуральный (1 ч. л.) + лимон</li>
-            </ul>
-        </div>
-        <div class="steps-box">
-            <h5>Приготовление:</h5>
-            <ol class="steps-list">
-                <li>Смешать соевый соус, горчицу и мёд. Обильно смазать рыбу.</li>
-                <li>На противень выложить рыбу и соцветия брокколи.</li>
-                <li>Запекать при 190°C ровно 12–14 минут (не пересушивать!).</li>
-                <li>Подавать с долькой лимона и белым кунжутом.</li>
-            </ol>
-        </div>
-    </div>
-    <div class="chef-tip">
-        💡 <b>Секрет Анастасии:</b> Омега-3 жирные кислоты лосося ускоряют ночное сжигание висцерального жира и делают кожу сияющей.
-    </div>
-</div>
-
-<div class="page-break"></div>
-
-<!-- СТРАНИЦА 7: ГОТОВЫЙ РАЦИОН НА 4 НЕДЕЛИ -->
-<div class="section-header">
-    <h2 class="section-title">Календарный Рацион: Сетка питания на неделю</h2>
-    <span class="section-tag">Четкий план без хаоса</span>
-</div>
-
-<p style="margin-bottom: 15px; color: #555;">Пример базовой недели. Порции рассчитаны на дефицит калорий 15–20% для комфортного снижения веса от 2.5 до 4 кг в месяц без чувства голода.</p>
-
-<div class="meal-plan-grid">
-    <div class="day-card">
-        <div class="day-name">Пн</div>
-        <div class="day-meal"><b>Завтрак:</b> ПП-сырники с ягодами</div>
-        <div class="day-meal"><b>Обед:</b> Паста с индейкой</div>
-        <div class="day-meal"><b>Ужин:</b> Курочка в соусе с черри</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Вт</div>
-        <div class="day-meal"><b>Завтрак:</b> Овсяноблин с лососем</div>
-        <div class="day-meal"><b>Обед:</b> Боул с киноа и птицей</div>
-        <div class="day-meal"><b>Ужин:</b> Хрустящие баклажаны</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Ср</div>
-        <div class="day-meal"><b>Завтрак:</b> Фриттата с фетой</div>
-        <div class="day-meal"><b>Обед:</b> Тыквенный суп-пюре</div>
-        <div class="day-meal"><b>Ужин:</b> Боул с тунцом и фасолью</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Чт</div>
-        <div class="day-meal"><b>Завтрак:</b> Шакшука с зеленью</div>
-        <div class="day-meal"><b>Обед:</b> Паста со шпинатом</div>
-        <div class="day-meal"><b>Ужин:</b> Лосось с брокколи</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Пт</div>
-        <div class="day-meal"><b>Завтрак:</b> Сырники с вишней</div>
-        <div class="day-meal"><b>Обед:</b> Боул с курицей гриль</div>
-        <div class="day-meal"><b>Ужин:</b> Куриное филе с черри</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Сб</div>
-        <div class="day-meal"><b>Завтрак:</b> Тосты с авокадо и яйцом</div>
-        <div class="day-meal"><b>Обед:</b> Булгур с индейкой</div>
-        <div class="day-meal"><b>Ужин:</b> Хрустящие баклажаны</div>
-    </div>
-    <div class="day-card">
-        <div class="day-name">Вс</div>
-        <div class="day-meal"><b>Завтрак:</b> Творожный мусс</div>
-        <div class="day-meal"><b>Обед:</b> Тыквенный крем-суп</div>
-        <div class="day-meal"><b>Ужин:</b> Запеченная рыба с салатом</div>
-    </div>
-</div>
-
-<!-- УМНЫЙ СПИСОК ПОКУПОК -->
-<div class="section-header" style="margin-top: 30px;">
-    <h2 class="section-title">Умный Список Покупок на неделю (Супермаркет / Доставка)</h2>
-    <span class="section-tag">Экономия 30% бюджета</span>
-</div>
-
-<div class="grocery-grid">
-    <div class="grocery-category">
-        <h4>Мясо, Птица, Рыба</h4>
-        <div class="grocery-item"><div class="checkbox"></div> Филе куриной грудки — 800 г</div>
-        <div class="grocery-item"><div class="checkbox"></div> Филе индейки — 600 г</div>
-        <div class="grocery-item"><div class="checkbox"></div> Стейк лосося / форели — 2 шт</div>
-        <div class="grocery-item"><div class="checkbox"></div> Тунец в с/с — 2 банки</div>
-        <div class="grocery-item"><div class="checkbox"></div> Креветки тигровые — 300 г</div>
+    <div style="margin-top: 25px; text-align: center; border-top: 1px solid #E8E1D7; padding-top: 14px; font-size: 11px; color: #777;">
+        <i>Материалы созданы эксклюзивно для резидентов закрытого кулинарного клуба Анастасии. Приятного аппетита и легкой готовки! 🤍</i>
     </div>
 
-    <div class="grocery-category">
-        <h4>Овощи, Зелень, Ягоды</h4>
-        <div class="grocery-item"><div class="checkbox"></div> Томаты черри — 2 упаковки</div>
-        <div class="grocery-item"><div class="checkbox"></div> Баклажаны — 2 шт</div>
-        <div class="grocery-item"><div class="checkbox"></div> Шпинат свежий — 2 пачки</div>
-        <div class="grocery-item"><div class="checkbox"></div> Брокколи / стручковая фасоль — 1 пачка</div>
-        <div class="grocery-item"><div class="checkbox"></div> Авокадо Хасс — 2 шт</div>
-        <div class="grocery-item"><div class="checkbox"></div> Тыква баттернат — 1 шт</div>
-        <div class="grocery-item"><div class="checkbox"></div> Замороженная вишня — 1 пачка</div>
+    <div class="page-footer">
+        <span>КОНСТРУКТОР ПИТАНИЯ АНАСТАСИИ</span>
+        <span>06</span>
     </div>
-
-    <div class="grocery-category">
-        <h4>Молочный отдел и Бакалея</h4>
-        <div class="grocery-item"><div class="checkbox"></div> Творог 5% брикетный — 3 пачки</div>
-        <div class="grocery-item"><div class="checkbox"></div> Яйца категории С0 — 2 десятка</div>
-        <div class="grocery-item"><div class="checkbox"></div> Сыр страчателла / фета — 2 уп</div>
-        <div class="grocery-item"><div class="checkbox"></div> Сливки 10% — 200 мл</div>
-        <div class="grocery-item"><div class="checkbox"></div> Греческий йогурт Teos 2% — 2 банки</div>
-        <div class="grocery-item"><div class="checkbox"></div> Паста твердых сортов (Barilla) — 1 уп</div>
-        <div class="grocery-item"><div class="checkbox"></div> Рисовая мука + кукурузный крахмал</div>
-    </div>
-</div>
-
-<div style="margin-top: 35px; text-align: center; border-top: 1px solid #EBE5DC; padding-top: 20px; color: #777; font-size: 11px;">
-    <i>Материалы подготовлены эксклюзивно для резидентов закрытого кулинарного клуба Анастасии. Распространение запрещено.</i>
 </div>
 
 </body>
 </html>
 """
 
-# Сохранение HTML
 with open(HTML_OUTPUT, "w", encoding="utf-8") as f:
     f.write(html_content)
 
 print(f"HTML сохранен: {HTML_OUTPUT}")
 
-# Конвертация в PDF через Google Chrome Headless
 chrome_path = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
 cmd = [
     chrome_path,
     "--headless",
     "--disable-gpu",
     f"--print-to-pdf={PDF_OUTPUT}",
-    "--print-to-pdf-no-header",
     str(HTML_OUTPUT)
 ]
 
-print("Генерация PDF через Headless Chrome...")
-result = subprocess.run(cmd, capture_output=True, text=True)
+print("Генерация чистого журнального PDF...")
+res = subprocess.run(cmd, capture_output=True, text=True)
 
 if PDF_OUTPUT.exists():
     size_mb = PDF_OUTPUT.stat().st_size / (1024 * 1024)
-    print(f"УСПЕХ! PDF сгенерирован: {PDF_OUTPUT} ({size_mb:.2f} MB)")
+    print(f"УСПЕХ! PDF обновлен: {PDF_OUTPUT} ({size_mb:.2f} MB)")
 else:
-    print("Ошибка генерации PDF:", result.stderr)
+    print("Ошибка генерации:", res.stderr)
