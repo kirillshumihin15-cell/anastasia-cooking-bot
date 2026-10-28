@@ -13,13 +13,13 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
         ],
         [
             InlineKeyboardButton(
-                text="🥗 Основной продукт (Меню на неделю)",
+                text="🥗 Закрытый канал (90+ рецептов)",
                 callback_data="menu:product"
             )
         ],
         [
             InlineKeyboardButton(
-                text="⭐️ Отзывы и фото блюд подписчиц",
+                text="⭐️ Отзывы и результаты",
                 callback_data="menu:reviews"
             )
         ],
@@ -34,11 +34,11 @@ def get_main_menu_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_recipes_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура раздела Лид-магнита"""
+    """Клавиатура раздела Топ-рецептов"""
     keyboard = [
         [
             InlineKeyboardButton(
-                text="📖 Экспресс-рецепты в боте",
+                text="📖 Открыть экспресс-рецепты в боте",
                 callback_data="guide:read_online"
             )
         ]
@@ -63,23 +63,23 @@ def get_recipes_keyboard() -> InlineKeyboardMarkup:
 
 
 def get_product_keyboard() -> InlineKeyboardMarkup:
-    """Клавиатура основного продукта с кнопками оплаты"""
+    """Клавиатура доступа в закрытый канал с кнопками оплаты"""
     keyboard = [
         [
             InlineKeyboardButton(
-                text="💳 Оплатить через Tribute (Telegram)",
+                text="💳 Вступить через Tribute (Telegram)",
                 url=config.PAYMENT_TRIBUTE_URL
             )
         ],
         [
             InlineKeyboardButton(
-                text="💳 Оплатить через Lava (Карты РФ / Мир)",
+                text="💳 Оплата картой РФ / Мир (Lava)",
                 url=config.PAYMENT_LAVA_URL
             )
         ],
         [
             InlineKeyboardButton(
-                text="❓ Вопрос по меню / оплате",
+                text="❓ Задать вопрос по доступу",
                 url=config.ANASTASIA_CONTACT
             )
         ],
@@ -98,7 +98,7 @@ def get_reviews_keyboard() -> InlineKeyboardMarkup:
     keyboard = [
         [
             InlineKeyboardButton(
-                text="📸 Канал с отзывами и фото блюд",
+                text="📸 Смотреть фото блюд и отзывы в канале",
                 url=config.REVIEWS_CHANNEL_LINK
             )
         ],
